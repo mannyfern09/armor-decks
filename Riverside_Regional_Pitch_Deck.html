@@ -1,0 +1,2244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armor Health — Riverside Regional Oral Presentation</title>
+<style>
+  :root {
+    --armor-red: #C8102E;
+    --armor-red-dark: #9A0C23;
+    --armor-charcoal: #1F2937;
+    --armor-near-black: #111827;
+    --armor-gray: #6B7280;
+    --armor-light-gray: #F3F4F6;
+    --armor-border: #E5E7EB;
+    --armor-white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: #0b0d12;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: var(--armor-charcoal);
+    overflow-x: hidden;
+  }
+
+  /* Top nav bar */
+  .topnav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 48px;
+    background: var(--armor-near-black);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 1000;
+    border-bottom: 2px solid var(--armor-red);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+  }
+  .topnav .brand { font-weight: 700; letter-spacing: 0.15em; }
+  .topnav .brand .red { color: var(--armor-red); }
+  .topnav .controls { display: flex; gap: 12px; align-items: center; }
+  .topnav button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .topnav button:hover { background: var(--armor-red); border-color: var(--armor-red); }
+  .topnav .counter { font-variant-numeric: tabular-nums; font-size: 12px; opacity: 0.8; min-width: 60px; text-align: center; }
+
+  /* Slide container */
+  .deck {
+    padding-top: 48px;
+  }
+  .slide {
+    width: 100vw;
+    min-height: calc(100vh - 48px);
+    aspect-ratio: 16 / 9;
+    max-height: calc(100vh - 48px);
+    position: relative;
+    overflow: hidden;
+    display: none;
+    background: #fff;
+  }
+  .slide.active { display: block; }
+
+  /* Print mode shows all slides */
+  @media print {
+    .topnav { display: none; }
+    .deck { padding-top: 0; }
+    .slide { display: block !important; page-break-after: always; width: 100%; height: 100vh; }
+    .phase-card, .commitment-banner, .why-box, .journey-stop { opacity: 1 !important; transform: none !important; }
+  }
+
+  /* Common slide elements */
+  .slide-number {
+    position: absolute;
+    bottom: 12px;
+    right: 20px;
+    font-size: 11px;
+    color: #fff;
+    letter-spacing: 0.1em;
+    z-index: 5;
+  }
+  .footer-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 28px;
+    background: var(--armor-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    font-weight: 600;
+  }
+  .logo-watermark {
+    position: absolute;
+    bottom: 36px;
+    right: 28px;
+    width: 60px;
+    height: 60px;
+    opacity: 0.25;
+    z-index: 1;
+  }
+  .logo-watermark svg { width: 100%; height: 100%; }
+
+  /* Title slide (dark) */
+  .slide.title {
+    background:
+      linear-gradient(135deg, rgba(17,24,39,0.92) 0%, rgba(31,41,55,0.88) 60%, rgba(200,16,46,0.35) 100%),
+      linear-gradient(45deg, #0b0d12 0%, #1a1f2e 100%);
+    color: #fff;
+    display: none;
+    padding: 70px 80px;
+  }
+  .slide.title.active { display: flex; flex-direction: column; justify-content: space-between; }
+  .title-header { display: flex; align-items: center; gap: 20px; }
+  .title-logo {
+    width: 80px; height: 80px;
+  }
+  .title-logo svg { width: 100%; height: 100%; }
+  .title-brand-text {
+    font-size: 18px;
+    letter-spacing: 0.35em;
+    font-weight: 700;
+  }
+  .title-brand-text .red { color: var(--armor-red); }
+  .title-main {
+    border-left: 5px solid var(--armor-red);
+    padding-left: 32px;
+    max-width: 900px;
+  }
+  .title-kicker {
+    font-size: 16px;
+    letter-spacing: 0.35em;
+    color: var(--armor-red);
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .title-main h1 {
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+  }
+  .title-main .sub {
+    font-size: 22px;
+    color: #CBD5E1;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+  .title-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: #94A3B8;
+  }
+  .title-footer .date { color: #E2E8F0; }
+
+  /* Content slide (light) */
+  .slide.content {
+    padding: 60px 80px 55px;
+    background: #fff;
+    display: none;
+  }
+  .slide.content.active { display: flex; flex-direction: column; }
+
+  .slide-kicker {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--armor-red);
+    font-weight: 700;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .slide-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--armor-near-black);
+    border-left: 5px solid var(--armor-red);
+    padding-left: 20px;
+    margin-bottom: 32px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .slide-title.small { font-size: 36px; }
+
+  /* Agenda slide */
+  .agenda-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 50px;
+    flex: 1;
+    align-content: center;
+  }
+  .agenda-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--armor-border);
+  }
+  .agenda-num {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    background: var(--armor-near-black);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    font-family: 'Georgia', serif;
+  }
+  .agenda-item.accent .agenda-num { background: var(--armor-red); }
+  .agenda-text {
+    flex: 1;
+    padding-top: 6px;
+  }
+  .agenda-text .t {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--armor-near-black);
+    margin-bottom: 4px;
+  }
+  .agenda-text .d {
+    font-size: 13px;
+    color: var(--armor-gray);
+    line-height: 1.4;
+  }
+
+  /* Overview slide - stat cards */
+  .overview-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    flex: 1;
+    align-items: center;
+  }
+  .overview-lead p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #374151;
+    margin-bottom: 16px;
+  }
+  .overview-lead .emphasis {
+    font-size: 22px;
+    color: var(--armor-near-black);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .stat-card {
+    background: var(--armor-light-gray);
+    padding: 22px 20px;
+    border-left: 4px solid var(--armor-red);
+    border-radius: 2px;
+  }
+  .stat-card .num {
+    font-size: 34px;
+    font-weight: 900;
+    color: var(--armor-near-black);
+    line-height: 1;
+    margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-card .lbl {
+    font-size: 12px;
+    color: var(--armor-gray);
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+  }
+
+  /* Corporate support - org chart */
+  .support-intro {
+    font-size: 18px;
+    color: #374151;
+    line-height: 1.55;
+    margin-bottom: 26px;
+    max-width: 1000px;
+  }
+  .support-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    flex: 1;
+  }
+  .support-card {
+    background: #fff;
+    border: 1px solid var(--armor-border);
+    border-top: 4px solid var(--armor-red);
+    padding: 22px 20px;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .support-card .role {
+    font-size: 13px;
+    color: var(--armor-red);
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .support-card .name {
+    font-size: 21px;
+    font-weight: 800;
+    color: var(--armor-near-black);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .support-card .title {
+    font-size: 15px;
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .support-card .bio {
+    font-size: 14px;
+    color: var(--armor-gray);
+    line-height: 1.5;
+  }
+  .support-card .placeholder {
+    font-size: 11px;
+    color: #9CA3AF;
+    font-style: italic;
+    line-height: 1.4;
+    padding: 8px;
+    background: #FAFAFA;
+    border: 1px dashed #D1D5DB;
+    border-radius: 2px;
+  }
+
+  /* Transition - High Level (phase cards) */
+  .phase-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    flex: 1;
+    align-content: stretch;
+  }
+  .phase-card {
+    background: #fff;
+    border: 1px solid var(--armor-border);
+    padding: 26px 24px;
+    position: relative;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    /* Animation: start hidden, then fade/slide in when .in class added */
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+  }
+  .phase-card.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .phase-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: var(--armor-red);
+  }
+  .phase-card .phase-label {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--armor-red);
+    font-weight: 700;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .phase-card .phase-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--armor-near-black);
+    margin-bottom: 8px;
+    line-height: 1.15;
+  }
+  .phase-card .phase-window {
+    font-size: 14px;
+    color: var(--armor-gray);
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+  .phase-card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .phase-card li {
+    font-size: 14.5px;
+    color: #374151;
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 9px;
+    line-height: 1.45;
+  }
+  .phase-card li::before {
+    content: '■';
+    color: var(--armor-red);
+    position: absolute;
+    left: 0;
+    font-size: 9px;
+    top: 7px;
+  }
+
+  .commitment-banner {
+    margin-top: 22px;
+    padding: 16px 24px;
+    background: var(--armor-near-black);
+    color: #fff;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+  }
+  .commitment-banner.in { opacity: 1; transform: translateY(0); }
+  .commitment-banner strong { color: var(--armor-red); font-weight: 800; letter-spacing: 0.1em; }
+
+  /* Detailed transition - workstream grid */
+  .workstream-intro {
+    font-size: 16px;
+    color: var(--armor-gray);
+    margin-bottom: 22px;
+    line-height: 1.55;
+  }
+
+  /* Workstream slide: tighten spacing so all 12 cards fit on one screen
+     while keeping the enlarged font sizes requested for presentation. */
+  .slide.workstream-slide {
+    padding-top: 32px;
+    padding-bottom: 40px;
+  }
+  .slide.workstream-slide .slide-kicker { margin-bottom: 2px; font-size: 10px; }
+  .slide.workstream-slide .slide-title { margin-bottom: 10px; font-size: 28px; }
+  .slide.workstream-slide .workstream-intro {
+    font-size: 13px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .slide.workstream-slide .workstream-grid { gap: 9px; }
+  .slide.workstream-slide .ws-card {
+    padding: 10px 14px 10px;
+    gap: 6px;
+    min-height: 0;
+    border-top-width: 3px;
+  }
+  .slide.workstream-slide .ws-card-head {
+    padding-bottom: 6px;
+    gap: 10px;
+  }
+  .slide.workstream-slide .ws-icon {
+    width: 28px; height: 28px; min-width: 28px;
+    font-size: 14px;
+  }
+  .slide.workstream-slide .ws-title { font-size: 15px; }
+  .slide.workstream-slide .ws-body { font-size: 12.5px; line-height: 1.35; }
+  .slide.workstream-slide .ws-body li { margin-bottom: 2px; padding-left: 12px; }
+  .slide.workstream-slide .ws-body li::before { font-size: 13px; }
+  .workstream-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    flex: 1;
+    align-content: stretch;
+  }
+  .ws-card {
+    background: #fff;
+    border: 1px solid var(--armor-border);
+    border-top: 4px solid var(--armor-red);
+    padding: 20px 22px 18px;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .ws-card-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--armor-border);
+  }
+  .ws-icon {
+    width: 40px; height: 40px; min-width: 40px;
+    background: var(--armor-red);
+    color: #fff;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px;
+  }
+  .ws-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--armor-near-black);
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+  }
+  .ws-body {
+    font-size: 14px;
+    color: #4B5563;
+    line-height: 1.5;
+    flex: 1;
+  }
+  .ws-body ul { list-style: none; padding: 0; }
+  .ws-body li {
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 7px;
+  }
+  .ws-body li::before {
+    content: '›';
+    color: var(--armor-red);
+    position: absolute; left: 0;
+    font-weight: 800;
+    font-size: 16px;
+    top: -1px;
+  }
+
+  /* Timeline slide */
+  .timeline-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+  }
+  .timeline-scale {
+    display: grid;
+    grid-template-columns: 220px repeat(6, 1fr) 90px;
+    gap: 0;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .timeline-scale .col {
+    font-size: 10px;
+    color: var(--armor-gray);
+    text-align: center;
+    padding: 6px 2px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    border-bottom: 2px solid var(--armor-border);
+  }
+  .timeline-scale .col.pre { background: #F9FAFB; border-bottom-color: var(--armor-red); color: var(--armor-near-black); }
+  .timeline-scale .col.go { background: var(--armor-red); color: #fff; border-bottom-color: var(--armor-near-black); }
+  .timeline-scale .label-col { border-bottom: 2px solid var(--armor-border); }
+
+  .timeline-row {
+    display: grid;
+    grid-template-columns: 220px repeat(6, 1fr) 90px;
+    gap: 0;
+    align-items: center;
+    min-height: 34px;
+    border-bottom: 1px solid #F3F4F6;
+  }
+  .timeline-row .label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--armor-near-black);
+    padding-right: 12px;
+  }
+  .timeline-row .cell {
+    height: 18px;
+    margin: 0 1px;
+    border-radius: 2px;
+  }
+  .bar-prep  { background: #FEE2E2; }
+  .bar-core  { background: var(--armor-red); }
+  .bar-live  { background: var(--armor-near-black); }
+  .bar-cont  { background: #9CA3AF; }
+
+  .timeline-legend {
+    display: flex;
+    gap: 20px;
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--armor-gray);
+  }
+  .timeline-legend .lk {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .timeline-legend .sw { width: 18px; height: 10px; border-radius: 2px; }
+
+  /* Data-driven slide */
+  .pitch-split {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 44px;
+    flex: 1;
+    align-items: center;
+  }
+  .pitch-left h3 {
+    font-size: 34px;
+    font-weight: 900;
+    color: var(--armor-near-black);
+    margin-bottom: 18px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .pitch-left p {
+    font-size: 17px;
+    color: #374151;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .pillar {
+    background: var(--armor-near-black);
+    color: #fff;
+    padding: 26px 22px;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pillar::before {
+    content: '';
+    position: absolute; top:0; left: 0; width: 46px; height: 46px;
+    background: var(--armor-red);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+  }
+  .pillar .pn {
+    font-size: 34px;
+    font-weight: 900;
+    color: var(--armor-red);
+    line-height: 1;
+    margin-bottom: 12px;
+    font-family: Georgia, serif;
+  }
+  .pillar .pt {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+  }
+  .pillar .pd {
+    font-size: 14.5px;
+    color: #CBD5E1;
+    line-height: 1.5;
+  }
+
+  /* Clinical model */
+  .clinical-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    flex: 1;
+  }
+  .clinical-col {
+    background: #fff;
+    border: 1px solid var(--armor-border);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .clinical-col .head {
+    background: var(--armor-near-black);
+    color: #fff;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .clinical-col .head .icon {
+    width: 36px; height: 36px;
+    background: var(--armor-red);
+    color: #fff;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900;
+  }
+  .clinical-col .head .label {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .clinical-col .body {
+    padding: 18px 20px;
+    flex: 1;
+  }
+  .clinical-col .body ul {
+    list-style: none;
+  }
+  .clinical-col .body li {
+    font-size: 13px;
+    color: #374151;
+    padding: 8px 0 8px 16px;
+    position: relative;
+    border-bottom: 1px solid var(--armor-light-gray);
+    line-height: 1.4;
+  }
+  .clinical-col .body li:last-child { border-bottom: none; }
+  .clinical-col .body li::before {
+    content: '✓';
+    color: var(--armor-red);
+    position: absolute; left: 0;
+    font-weight: 800;
+  }
+
+  /* Outcomes / Why Armor */
+  .outcome-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    flex: 1;
+    align-content: center;
+  }
+  .outcome-card {
+    background: #fff;
+    border: 1px solid var(--armor-border);
+    padding: 28px 24px;
+    border-radius: 2px;
+    border-top: 5px solid var(--armor-red);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+  .outcome-card .big {
+    font-size: 56px;
+    font-weight: 900;
+    color: var(--armor-red);
+    line-height: 1;
+    margin-bottom: 10px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .outcome-card .lbl {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--armor-near-black);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .outcome-card .desc {
+    font-size: 13px;
+    color: var(--armor-gray);
+    line-height: 1.5;
+  }
+
+  /* Why Armor - bold 2x2 card grid */
+  .why-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 22px;
+    flex: 1;
+    align-content: stretch;
+  }
+  .why-box {
+    background: #fff;
+    border: 1px solid var(--armor-border);
+    border-radius: 3px;
+    padding: 30px 32px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.75s ease-out, transform 0.75s ease-out;
+  }
+  .why-box.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .why-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 6px; height: 100%;
+    background: var(--armor-red);
+  }
+  .why-box::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, transparent 50%, rgba(200,16,46,0.08) 50%);
+    pointer-events: none;
+  }
+  .why-box .why-head {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 16px;
+  }
+  .why-box .why-badge {
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--armor-red);
+    font-family: Georgia, serif;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .why-box .why-kicker {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--armor-gray);
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+  .why-box .why-headline {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--armor-near-black);
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+  }
+  .why-box .why-desc {
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.55;
+    flex: 1;
+  }
+  .why-box .why-divider {
+    width: 40px;
+    height: 2px;
+    background: var(--armor-red);
+    margin: 0 0 14px 0;
+  }
+
+  /* Closing slide */
+  .slide.closing {
+    background:
+      linear-gradient(135deg, rgba(17,24,39,0.95) 0%, rgba(31,41,55,0.92) 60%, rgba(200,16,46,0.4) 100%),
+      #0b0d12;
+    color: #fff;
+    padding: 80px;
+    display: none;
+  }
+  .slide.closing.active { display: flex; flex-direction: column; justify-content: space-between; }
+  .closing-main {
+    border-left: 5px solid var(--armor-red);
+    padding-left: 32px;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+  .closing-main .k {
+    font-size: 14px;
+    letter-spacing: 0.35em;
+    color: var(--armor-red);
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+  .closing-main h1 {
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 1.02;
+    margin-bottom: 22px;
+    letter-spacing: -0.01em;
+  }
+  .closing-main .tag {
+    font-size: 20px;
+    color: #CBD5E1;
+    font-weight: 300;
+    max-width: 720px;
+    line-height: 1.4;
+  }
+  .closing-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: #94A3B8;
+  }
+  .closing-contact strong { color: #fff; display: block; font-size: 15px; letter-spacing: 0.08em; margin-bottom: 4px; }
+
+  /* Section header helper (for light footer-less backgrounds) */
+  .big-quote {
+    font-size: 20px;
+    font-style: italic;
+    color: #374151;
+    border-left: 3px solid var(--armor-red);
+    padding: 10px 0 10px 20px;
+    max-width: 900px;
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+
+  /* ===== Patient Care Journey (icon flow) ===== */
+  .journey-intro {
+    font-size: 17px;
+    color: #4B5563;
+    margin-bottom: 30px;
+    line-height: 1.55;
+    max-width: 1100px;
+  }
+  .journey-flow {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    flex: 1;
+    align-items: center;
+    position: relative;
+    padding: 20px 0 30px;
+  }
+  /* Connecting line behind icons */
+  .journey-flow::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 8%;
+    right: 8%;
+    height: 3px;
+    background: repeating-linear-gradient(
+      to right,
+      var(--armor-border) 0,
+      var(--armor-border) 8px,
+      transparent 8px,
+      transparent 14px
+    );
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+  .journey-stop {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 6px;
+    /* animation start */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+  .journey-stop.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .journey-icon {
+    width: 110px;
+    height: 110px;
+    background: #fff;
+    border: 3px solid var(--armor-red);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    box-shadow: 0 6px 18px rgba(200,16,46,0.15);
+    position: relative;
+  }
+  .journey-icon svg {
+    width: 56px;
+    height: 56px;
+    fill: var(--armor-near-black);
+  }
+  .journey-icon::after {
+    content: attr(data-num);
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 32px;
+    height: 32px;
+    background: var(--armor-near-black);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    font-family: Georgia, serif;
+    border: 3px solid #fff;
+  }
+  .journey-label {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--armor-near-black);
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+  }
+  .journey-callout {
+    margin-top: 20px;
+    padding: 16px 22px;
+    background: var(--armor-light-gray);
+    border-left: 4px solid var(--armor-red);
+    font-size: 15px;
+    color: #374151;
+    line-height: 1.55;
+  }
+  .journey-callout strong { color: var(--armor-near-black); }
+
+  /* ===== Mental Health Services ===== */
+  .slide.content[data-num="mental-health"] {
+    padding-top: 38px;
+    padding-bottom: 42px;
+  }
+  .slide.content[data-num="mental-health"] .slide-title {
+    margin-bottom: 8px;
+    font-size: 36px;
+  }
+  .mh-layout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    flex: 1;
+  }
+  .mh-card {
+    background: linear-gradient(135deg, #ffffff 0%, #FAFAFA 100%);
+    border: 1px solid var(--armor-border);
+    border-radius: 4px;
+    padding: 16px 22px 14px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  /* Subtle red corner triangle accent */
+  .mh-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 70px; height: 70px;
+    background: linear-gradient(135deg, transparent 50%, rgba(200,16,46,0.10) 50%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .mh-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 4px;
+    background: var(--armor-red);
+  }
+  .mh-card .mh-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+    padding-top: 4px;
+    position: relative;
+    z-index: 2;
+  }
+  .mh-card .mh-icon {
+    width: 46px; height: 46px;
+    background: var(--armor-near-black);
+    color: #fff;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+  }
+  .mh-card .mh-icon svg {
+    width: 24px; height: 24px;
+    fill: #fff;
+  }
+  .mh-card .mh-title-block {
+    flex: 1;
+  }
+  .mh-card .mh-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--armor-near-black);
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  .mh-card .mh-tag {
+    font-size: 10px;
+    color: var(--armor-red);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+  .mh-card .mh-pitch {
+    font-size: 12.5px;
+    color: #4B5563;
+    line-height: 1.4;
+    font-style: italic;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--armor-border);
+  }
+  .mh-card .mh-body {
+    font-size: 12.5px;
+    color: #374151;
+    line-height: 1.45;
+    flex: 1;
+  }
+  .mh-card .mh-body ul { list-style: none; padding: 0; }
+  .mh-card .mh-body li {
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+  .mh-card .mh-body li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 6px;
+    width: 6px; height: 6px;
+    background: var(--armor-red);
+    border-radius: 50%;
+  }
+  .mh-card .mh-body li strong {
+    color: var(--armor-near-black);
+    font-weight: 700;
+  }
+
+  .mh-stripe {
+    margin-top: 12px;
+    background: var(--armor-near-black);
+    color: #fff;
+    border-left: 5px solid var(--armor-red);
+    border-radius: 2px;
+    padding: 12px 22px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 18px;
+    align-items: center;
+  }
+  .mh-stripe .mh-stripe-msg {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #E5E7EB;
+  }
+  .mh-stripe .mh-stripe-msg strong {
+    color: var(--armor-red);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  .mh-stripe .mh-stat {
+    text-align: center;
+    border-left: 1px solid #374151;
+    padding: 2px 6px;
+  }
+  .mh-stripe .mh-stat .num {
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .mh-stripe .mh-stat .lbl {
+    font-size: 9.5px;
+    color: #94A3B8;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  /* ===== Staffing Plan ===== */
+  .staffing-split {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 30px;
+    flex: 1;
+    align-content: stretch;
+  }
+  .staffing-block {
+    background: #fff;
+    border: 1px solid var(--armor-border);
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .staffing-block .sb-head {
+    background: var(--armor-near-black);
+    color: #fff;
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .staffing-block .sb-head .sb-icon {
+    width: 36px; height: 36px;
+    background: var(--armor-red);
+    color: #fff;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 16px;
+  }
+  .staffing-block .sb-head .sb-title {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .staffing-block .sb-body {
+    padding: 18px 22px;
+    flex: 1;
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.55;
+  }
+  .staffing-block .sb-body p { margin-bottom: 10px; }
+  .staffing-block .sb-body ul { list-style: none; padding: 0; }
+  .staffing-block .sb-body li {
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 7px;
+  }
+  .staffing-block .sb-body li::before {
+    content: '■';
+    color: var(--armor-red);
+    position: absolute; left: 0;
+    font-size: 9px;
+    top: 7px;
+  }
+  .staffing-block .sb-body li strong { color: var(--armor-near-black); font-weight: 700; }
+
+  /* ===== Recruiting Plan ===== */
+  .recruit-intro {
+    font-size: 16px;
+    color: #4B5563;
+    margin-bottom: 20px;
+    line-height: 1.55;
+    max-width: 1100px;
+  }
+  .recruit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    flex: 1;
+    align-content: stretch;
+  }
+  .recruit-card {
+    background: #fff;
+    border: 1px solid var(--armor-border);
+    border-top: 5px solid var(--armor-red);
+    border-radius: 2px;
+    padding: 22px 22px 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .recruit-card .rc-num {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--armor-red);
+    font-family: Georgia, serif;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .recruit-card .rc-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--armor-near-black);
+    margin-bottom: 10px;
+    line-height: 1.25;
+  }
+  .recruit-card .rc-body {
+    font-size: 13px;
+    color: #4B5563;
+    line-height: 1.5;
+    flex: 1;
+  }
+  .recruit-card .rc-body ul { list-style: none; padding: 0; }
+  .recruit-card .rc-body li {
+    padding-left: 14px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+  .recruit-card .rc-body li::before {
+    content: '›';
+    color: var(--armor-red);
+    position: absolute; left: 0;
+    font-weight: 800;
+  }
+  .recruit-banner {
+    margin-top: 16px;
+    padding: 14px 22px;
+    background: var(--armor-near-black);
+    color: #fff;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px;
+    letter-spacing: 0.03em;
+  }
+  .recruit-banner strong { color: var(--armor-red); font-weight: 800; letter-spacing: 0.08em; }
+  /* ===== Staff & Retain (Riverside) ===== */
+  .retention-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 18px;
+    flex: 1;
+  }
+  .retention-card {
+    background: #fff;
+    border: 1px solid var(--armor-border);
+    border-left: 5px solid var(--armor-red);
+    border-radius: 2px;
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .retention-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 70px; height: 70px;
+    background: linear-gradient(135deg, transparent 50%, rgba(200,16,46,0.08) 50%);
+    pointer-events: none;
+  }
+  .retention-card .rc-num {
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--armor-red);
+    font-family: Georgia, serif;
+    line-height: 1;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+  .retention-card .rc-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--armor-near-black);
+    line-height: 1.2;
+    margin-bottom: 6px;
+    letter-spacing: -0.005em;
+  }
+  .retention-card .rc-tag {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--armor-gray);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--armor-border);
+  }
+  .retention-card .rc-body {
+    font-size: 13.5px;
+    color: #374151;
+    line-height: 1.55;
+    flex: 1;
+  }
+  .retention-footer {
+    margin-top: 18px;
+    padding: 14px 22px;
+    background: var(--armor-near-black);
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    border-left: 4px solid var(--armor-red);
+  }
+  .retention-footer strong { color: var(--armor-red); font-weight: 800; letter-spacing: 0.05em; }
+
+  /* ===== How We Retain Slide ===== */
+  .workforce-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+    max-width: 1300px;
+  }
+  .workforce-list li {
+    font-size: 18px;
+    color: #374151;
+    line-height: 1.55;
+    padding-left: 28px;
+    position: relative;
+    margin-bottom: 22px;
+  }
+  .workforce-list li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 10px;
+    width: 11px; height: 11px;
+    background: var(--armor-red);
+    border-radius: 50%;
+  }
+  .workforce-list li strong {
+    color: var(--armor-near-black);
+    font-weight: 800;
+  }
+
+  .workforce-banner {
+    margin-top: 22px;
+    padding: 16px 24px;
+    background: var(--armor-near-black);
+    color: #fff;
+    font-size: 14.5px;
+    line-height: 1.45;
+    border-left: 5px solid var(--armor-red);
+    border-radius: 2px;
+    letter-spacing: 0.02em;
+  }
+  .workforce-banner strong {
+    color: var(--armor-red);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Top Nav -->
+<div class="topnav">
+  <div class="brand">ARMOR <span class="red">HEALTH</span> · RIVERSIDE REGIONAL</div>
+  <div class="controls">
+    <button onclick="prevSlide()">◀ PREV</button>
+    <div class="counter"><span id="current">1</span> / <span id="total">12</span></div>
+    <button onclick="nextSlide()">NEXT ▶</button>
+    <button onclick="window.print()">PRINT</button>
+  </div>
+</div>
+
+<div class="deck">
+
+<!-- ==================== SLIDE 1: TITLE ==================== -->
+<section class="slide title active" data-num="1">
+  <div class="title-header">
+    <div class="title-logo">
+      <!-- Armor-style A with cross logo -->
+      <svg viewBox="0 0 100 100">
+        <path d="M50 8 L88 88 L72 88 L50 40 L28 88 L12 88 Z" fill="#ffffff"/>
+        <rect x="44" y="52" width="12" height="28" fill="#C8102E"/>
+        <rect x="36" y="60" width="28" height="12" fill="#C8102E"/>
+      </svg>
+    </div>
+    <div class="title-brand-text">ARMOR <span class="red">HEALTH</span></div>
+  </div>
+  <div class="title-main">
+    <div class="title-kicker">Oral Presentation</div>
+    <h1>Riverside Regional<br>Correctional Healthcare</h1>
+    <div class="sub">A partnership built on clinical excellence, operational discipline, and a transition plan that puts patients — and your staff — first.</div>
+  </div>
+  <div class="title-footer">
+    <div>PRESENTED BY ARMOR HEALTH</div>
+    <div class="date" id="presentDate">&nbsp;</div>
+  </div>
+  <div class="slide-number">01</div>
+</section>
+
+<!-- ==================== SLIDE 2: ABOUT ARMOR ==================== -->
+<section class="slide content" data-num="3">
+  <div class="slide-kicker">Introduction</div>
+  <div class="slide-title">Who is Armor Health?</div>
+  <div class="overview-layout">
+    <div class="overview-lead">
+      <p class="emphasis">We are a national leader in correctional healthcare with two decades of experience managing complex patient populations behind the walls.</p>
+      <p>Headquartered in Miami with a nationwide footprint, Armor Health has built its reputation on clinical discipline, data-driven care, and operational accountability. We treat every facility we serve as a partnership — not a contract.</p>
+      <p style="font-style: italic; color: var(--armor-red); font-weight: 600;">Raising the Standard of Care.</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="num">2004</div>
+        <div class="lbl">FOUNDED</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">2M+</div>
+        <div class="lbl">PATIENTS MANAGED SINCE INCEPTION</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">100+</div>
+        <div class="lbl">FACILITIES SERVICED NATIONALLY</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">1,500+</div>
+        <div class="lbl">EMPLOYEES ACROSS THE COUNTRY</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">200+</div>
+        <div class="lbl">YEARS COMBINED HEALTHCARE LEADERSHIP</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">100+</div>
+        <div class="lbl">YEARS CORRECTIONAL HEALTHCARE EXPERIENCE</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bar">ARMOR HEALTH</div>
+  <div class="slide-number">02</div>
+</section>
+
+<!-- ==================== SLIDE 4: CORPORATE SUPPORT TEAM ==================== -->
+<section class="slide content" data-num="4">
+  <div class="slide-kicker">The People Behind Your Facility</div>
+  <div class="slide-title">Corporate Support Team</div>
+  <p class="support-intro">Riverside Regional will have dedicated, named leadership across every corporate function — clinical, operational, HR, finance, and IT. This is the team that will own your transition and stand behind the site every day after go-live.</p>
+  <div class="support-grid">
+    <div class="support-card">
+      <div class="role">Executive Sponsor</div>
+      <div class="name">Walter Tripp</div>
+      <div class="title">Regional Vice President</div>
+      <div class="bio">Executive owner for the Riverside Regional engagement. Senior operational leadership across Armor's multi-facility portfolio with direct accountability for transition delivery and ongoing performance.</div>
+    </div>
+    <div class="support-card">
+      <div class="role">Operations</div>
+      <div class="name">Kenneth Grey</div>
+      <div class="title">Regional Manager</div>
+      <div class="bio">Day-to-day operational lead. Owns on-site execution, staffing stability, facility reporting, and the first line of escalation for Riverside Regional leadership.</div>
+    </div>
+    <div class="support-card">
+      <div class="role">Clinical Physician</div>
+      <div class="name">Mohammad Hashi, MD</div>
+      <div class="title">Regional Medical Director</div>
+      <div class="bio">Clinical oversight for Riverside Regional. Drives provider onboarding, chronic care protocols, joint rounds, and disease management consistency across the site.</div>
+    </div>
+    <div class="support-card">
+      <div class="role">Behavioral Health</div>
+      <div class="name">Kelley Beckett</div>
+      <div class="title">Regional Behavioral Health Director</div>
+      <div class="bio">Behavioral health strategy and delivery. Oversees BH intake, psychotropic medication transition, crisis response, and community provider coordination.</div>
+    </div>
+    <div class="support-card">
+      <div class="role">Pharmacy</div>
+      <div class="name">Robert Pichardo</div>
+      <div class="title">Director of Pharmacy</div>
+      <div class="bio">Formulary, pharmacy vendor management, DEA compliance, eMAR, and pharmacy cost containment. Leads the Pharmacy &amp; Therapeutics Committee.</div>
+    </div>
+    <div class="support-card">
+      <div class="role">Continuous Quality Improvement</div>
+      <div class="name">Jillian Lorenz</div>
+      <div class="title">CQI</div>
+      <div class="bio">Quality program lead. Owns CQI committee cadence, audit readiness, compliance monitoring, and the continuous improvement loop after go-live.</div>
+    </div>
+    <div class="support-card">
+      <div class="role">Human Resources</div>
+      <div class="name">Jennifer Diaz</div>
+      <div class="title">VP of Human Resources</div>
+      <div class="bio">Staff transition, recruitment, benefits, worker's comp, and new employee orientation. Owns the Riverside Regional workforce strategy end-to-end.</div>
+    </div>
+  </div>
+  <div class="footer-bar">ARMOR HEALTH</div>
+  <div class="slide-number">03</div>
+</section>
+
+<!-- ==================== NEW SLIDE: PATIENT CARE JOURNEY ==================== -->
+<section class="slide content" data-num="patient-journey">
+  <div class="slide-kicker">Continuum of Care</div>
+  <div class="slide-title small">Patient Care Journey — Entry to Discharge</div>
+  <div class="journey-intro">Every Riverside Regional inmate moves through a defined, repeatable clinical pathway — from booking through release. We will walk through each touchpoint.</div>
+  <div class="journey-flow" data-journey-flow>
+
+    <!-- STOP 1: INTAKE (clipboard icon) -->
+    <div class="journey-stop" data-jseq="1">
+      <div class="journey-icon" data-num="1">
+        <svg viewBox="0 0 24 24"><path d="M9 2h6c.55 0 1 .45 1 1v1h2c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h2V3c0-.55.45-1 1-1zm0 2v2h6V4H9zm-3 4v12h12V8h-2v1c0 .55-.45 1-1 1H9c-.55 0-1-.45-1-1V8H6zm2 4h8v1.5H8V12zm0 3h8v1.5H8V15zm0 3h5v1.5H8V18z"/></svg>
+      </div>
+      <div class="journey-label">Intake</div>
+    </div>
+
+    <!-- STOP 2: SICK CALL (stethoscope icon) -->
+    <div class="journey-stop" data-jseq="2">
+      <div class="journey-icon" data-num="2">
+        <svg viewBox="0 0 24 24"><path d="M11 2v3.5c0 2.49-2.01 4.5-4.5 4.5S2 7.99 2 5.5V2h2v3.5C4 6.88 5.12 8 6.5 8S9 6.88 9 5.5V2h2zm5.5 12c-1.93 0-3.5-1.57-3.5-3.5V8.95c2.84-.48 5-2.94 5-5.95V2h-2v1c0 1.93-1.57 3.5-3.5 3.5S9 4.93 9 3V2H7v1c0 3.01 2.16 5.47 5 5.95V10.5C12 13.54 14.46 16 17.5 16c1.66 0 3 1.34 3 3v3h2v-3c0-2.76-2.24-5-5-5h-1zm0-2c1.38 0 2.5-1.12 2.5-2.5S17.88 7 16.5 7 14 8.12 14 9.5s1.12 2.5 2.5 2.5z"/></svg>
+      </div>
+      <div class="journey-label">Sick Call</div>
+    </div>
+
+    <!-- STOP 3: EMERGENCY SICK CALL (medical cross icon) -->
+    <div class="journey-stop" data-jseq="3">
+      <div class="journey-icon" data-num="3">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v4h4v2h-4v4h-2v-4H7v-2h4V7z"/></svg>
+      </div>
+      <div class="journey-label">Emergency<br>Sick Call</div>
+    </div>
+
+    <!-- STOP 4: 14-DAY PHYSICAL (heart with pulse icon) -->
+    <div class="journey-stop" data-jseq="4">
+      <div class="journey-icon" data-num="4">
+        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35zM7.5 5C5.5 5 4 6.5 4 8.5c0 2.89 3.14 5.74 7.55 9.74l.45.41.45-.41C16.86 14.24 20 11.39 20 8.5 20 6.5 18.5 5 16.5 5c-1.54 0-3.04.99-3.57 2.36h-1.87C10.54 5.99 9.04 5 7.5 5zM6 11h2.5l1-2 2 4 1-2H17v1.5h-3.5l-1 2-2-4-1 2H6V11z"/></svg>
+      </div>
+      <div class="journey-label">14-Day<br>Physical</div>
+    </div>
+
+    <!-- STOP 5: CHRONIC CARE (medical chart with line icon) -->
+    <div class="journey-stop" data-jseq="5">
+      <div class="journey-icon" data-num="5">
+        <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-3.5-3.5 1.41-1.41L10 14.17l5.59-5.59L17 10l-7 7z"/></svg>
+      </div>
+      <div class="journey-label">Chronic Care</div>
+    </div>
+
+    <!-- STOP 6: DISCHARGE (exit door icon) -->
+    <div class="journey-stop" data-jseq="6">
+      <div class="journey-icon" data-num="6">
+        <svg viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+      </div>
+      <div class="journey-label">Discharge</div>
+    </div>
+
+  </div>
+  <div class="journey-callout"><strong>Continuity by design:</strong> every step feeds the next — intake findings drive the 14-day physical, which establishes the chronic care list, which informs discharge planning. No patient falls through the cracks.</div>
+  <div class="footer-bar">ARMOR HEALTH</div>
+  <div class="slide-number">04</div>
+</section>
+
+<!-- ==================== NEW SLIDE: MENTAL HEALTH SERVICES ==================== -->
+<section class="slide content" data-num="mental-health">
+  <div class="slide-kicker">Behavioral Health</div>
+  <div class="slide-title">Mental Health Services</div>
+  <div style="font-size:14px; color:#4B5563; margin-bottom:14px; line-height:1.5; max-width:1100px;">A dedicated behavioral health team integrated with the medical clinic — built around early identification, active monitoring, and continuity into the community on release.</div>
+  <div class="mh-layout">
+
+    <div class="mh-card">
+      <div class="mh-head">
+        <div class="mh-icon">
+          <!-- Shield icon for Suicide Prevention -->
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+        </div>
+        <div class="mh-title-block">
+          <div class="mh-title">Suicide Prevention</div>
+          <div class="mh-tag">Screen · Monitor · Respond</div>
+        </div>
+      </div>
+      <div class="mh-pitch">"Every patient screened. Every event reviewed. Every gap closed."</div>
+      <div class="mh-body"><ul>
+        <li><strong>Suicide risk screen at intake</strong> — every patient, every booking</li>
+        <li>Validated screening tools by trained staff</li>
+        <li>Constant or close observation protocols based on acuity</li>
+        <li>Suicide-resistant housing &amp; equipment review</li>
+        <li>Post-event debrief &amp; mortality review with corrective action</li>
+        <li><strong>Annual all-staff</strong> suicide prevention training</li>
+      </ul></div>
+    </div>
+
+    <div class="mh-card">
+      <div class="mh-head">
+        <div class="mh-icon">
+          <!-- Clipboard with checkmark for Mental Health Assessments -->
+          <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-3.5-3.5 1.41-1.41L10 14.17l5.59-5.59L17 10l-7 7z"/></svg>
+        </div>
+        <div class="mh-title-block">
+          <div class="mh-title">Mental Health Assessments</div>
+          <div class="mh-tag">Standardized · Documented · Repeatable</div>
+        </div>
+      </div>
+      <div class="mh-pitch">"From intake screen to comprehensive evaluation in 14 days or less."</div>
+      <div class="mh-body"><ul>
+        <li>Receiving screening at intake — every patient</li>
+        <li><strong>Comprehensive MH evaluation within 14 days</strong> when indicated</li>
+        <li>Standardized tools: PHQ-9, GAD-7, AUDIT, COWS</li>
+        <li>Diagnosis &amp; care plan documented in EHR</li>
+        <li>Provider-level evaluation by licensed clinicians</li>
+        <li>Re-evaluation triggered by acute events or self-referral</li>
+      </ul></div>
+    </div>
+
+    <div class="mh-card">
+      <div class="mh-head">
+        <div class="mh-icon">
+          <!-- Pill / capsule icon for Medication Monitoring -->
+          <svg viewBox="0 0 24 24"><path d="M4.22 11.29l7.07-7.07c2.34-2.34 6.14-2.34 8.49 0 2.34 2.34 2.34 6.14 0 8.49l-7.07 7.07c-2.34 2.34-6.14 2.34-8.49 0-2.34-2.35-2.34-6.15 0-8.49zm1.41 1.42c-1.56 1.56-1.56 4.09 0 5.66 1.56 1.56 4.1 1.57 5.66 0L14.83 15 8.46 8.63l-2.83 2.83z"/></svg>
+        </div>
+        <div class="mh-title-block">
+          <div class="mh-title">Medication Monitoring</div>
+          <div class="mh-tag">Continuity · Compliance · Safety</div>
+        </div>
+      </div>
+      <div class="mh-pitch">"No psychotropic prescription falls through the cracks — at intake, in care, or at release."</div>
+      <div class="mh-body"><ul>
+        <li>Psychotropic medication continuity from community at intake</li>
+        <li><strong>Electronic MAR (eMAR)</strong> with directly observed therapy</li>
+        <li>Provider follow-up — minimum every 90 days</li>
+        <li>Side-effect monitoring &amp; AIMS assessment as indicated</li>
+        <li>Lab monitoring per drug-specific protocols (lithium, clozapine)</li>
+        <li>Medication reconciliation at every transition of care</li>
+      </ul></div>
+    </div>
+
+    <div class="mh-card">
+      <div class="mh-head">
+        <div class="mh-icon">
+          <!-- Video camera icon for Telepsychiatry -->
+          <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        </div>
+        <div class="mh-title-block">
+          <div class="mh-title">Telepsychiatry</div>
+          <div class="mh-tag">Access · Speed · Coverage</div>
+        </div>
+      </div>
+      <div class="mh-pitch">"Board-certified psychiatry on demand — no transports, no delays."</div>
+      <div class="mh-body"><ul>
+        <li>Board-certified psychiatrists available via secure video</li>
+        <li><strong>Same-week appointment availability</strong> for urgent referrals</li>
+        <li>Integrated documentation directly into the EHR</li>
+        <li>Backup &amp; on-call coverage nights, weekends, holidays</li>
+        <li>Expands access without sacrificing clinical quality</li>
+        <li>Ideal complement to on-site BH staff for medication management</li>
+      </ul></div>
+    </div>
+
+  </div>
+
+  <div class="mh-stripe">
+    <div class="mh-stripe-msg"><strong>INTEGRATED FROM DAY 1.</strong> Every patient — every booking — every shift.</div>
+    <div class="mh-stat"><div class="num">100%</div><div class="lbl">Patients Screened</div></div>
+    <div class="mh-stat"><div class="num">14 days</div><div class="lbl">To Full Evaluation</div></div>
+    <div class="mh-stat"><div class="num">24/7</div><div class="lbl">On-Call BH Coverage</div></div>
+  </div>
+
+  <div class="footer-bar">ARMOR HEALTH</div>
+  <div class="slide-number">05</div>
+</section>
+
+<!-- ==================== SLIDE 5: TRANSITION HIGH LEVEL ==================== -->
+<section class="slide content" data-num="5">
+  <div class="slide-kicker">Transition Plan</div>
+  <div class="slide-title">A Proven, Phased Approach</div>
+  <div style="font-size:16px; color:#4B5563; margin-bottom:22px; max-width:1000px; line-height:1.55;">Our transition methodology is the same playbook we have executed across dozens of facility start-ups. This transition will be delivered in <strong style="color:var(--armor-near-black);">6 weeks</strong>, with a target go-live of <strong style="color:var(--armor-near-black);">July 1, 2026</strong> — explicit owners, milestones, and certified completion gates at every stage. Nothing moves to the next phase until the prior gate is clean.</div>
+  <div class="phase-row" data-phase-row>
+    <div class="phase-card" data-seq="1">
+      <div class="phase-label">PHASE 1</div>
+      <div class="phase-title">Mobilize</div>
+      <div class="phase-window">Contract Award → Day 10</div>
+      <ul>
+        <li>Executive kickoff with County leadership</li>
+        <li>Site walkthroughs &amp; inventory</li>
+        <li>Stand up the transition team</li>
+        <li>Review contract, staffing matrix, reporting</li>
+      </ul>
+    </div>
+    <div class="phase-card" data-seq="2">
+      <div class="phase-label">PHASE 2</div>
+      <div class="phase-title">Build</div>
+      <div class="phase-window">Day 11 → Day 35</div>
+      <ul>
+        <li>Recruit &amp; credential HSA, MD, DON</li>
+        <li>Onboard transitioning staff</li>
+        <li>Stand up vendors (pharmacy, lab, radiology)</li>
+        <li>IT infrastructure &amp; EHR training</li>
+      </ul>
+    </div>
+    <div class="phase-card" data-seq="3">
+      <div class="phase-label">PHASE 3</div>
+      <div class="phase-title">Go-Live</div>
+      <div class="phase-window">Day 36 → July 1</div>
+      <ul>
+        <li>Final dry runs &amp; staffing schedule posted</li>
+        <li>Pharmaceuticals, supplies, equipment in place</li>
+        <li>Day 1 command center on-site</li>
+        <li>Joint rounds with clinical leadership</li>
+      </ul>
+    </div>
+    <div class="phase-card" data-seq="4">
+      <div class="phase-label">PHASE 4</div>
+      <div class="phase-title">Stabilize</div>
+      <div class="phase-window">Post Go-Live → Day 90</div>
+      <ul>
+        <li>KPI scorecard reporting cadence</li>
+        <li>First operations audit</li>
+        <li>MAC / CQI / P&amp;T committees seated</li>
+        <li>Continuous improvement loop engaged</li>
+      </ul>
+    </div>
+  </div>
+  <div class="commitment-banner" data-phase-banner><strong>OUR COMMITMENT:</strong> Zero disruption to patient care on Day 1. No lapses in medications, offsite appointments, or chronic care.</div>
+  <div class="footer-bar">ARMOR HEALTH</div>
+  <div class="slide-number">06</div>
+</section>
+
+<!-- ==================== SLIDE 6: DETAILED TRANSITION — WORKSTREAMS ==================== -->
+<section class="slide content workstream-slide" data-num="6">
+  <div class="slide-kicker">Transition Plan — Detailed</div>
+  <div class="slide-title small">Workstreams &amp; Functional Owners</div>
+  <div class="workstream-intro">Our transition checklist contains 140+ tasks organized across 12 functional workstreams, each with a named corporate owner. Below is the structure — the full checklist and schedule will be shared with Riverside Regional on contract award.</div>
+  <div class="workstream-grid">
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">R</div><div class="ws-title">RVP / Start-Up Lead</div></div>
+      <div class="ws-body"><ul>
+        <li>Client kickoff &amp; staffing plan</li>
+        <li>Org chart exchange</li>
+        <li>Reporting &amp; comms protocols</li>
+        <li>Contract compliance start-up</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">N</div><div class="ws-title">Network Dev. &amp; UM</div></div>
+      <div class="ws-body"><ul>
+        <li>Hospital, specialist, EMS agreements</li>
+        <li>Lab, x-ray, oxygen, biohazard</li>
+        <li>Discharge planning &amp; UM setup</li>
+        <li>Credentialing for providers</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">M</div><div class="ws-title">Medical Services</div></div>
+      <div class="ws-body"><ul>
+        <li>MD/NP credentialing &amp; onboarding</li>
+        <li>Chronic care clinic scheduling</li>
+        <li>Disease management &amp; formulary orientation</li>
+        <li>Joint rounds at go-live</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">B</div><div class="ws-title">Behavioral Health</div></div>
+      <div class="ws-body"><ul>
+        <li>BHD appointment &amp; staff hiring</li>
+        <li>Psychotropic medication transition</li>
+        <li>Community provider coordination</li>
+        <li>Intake &amp; reception screening</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">P</div><div class="ws-title">Pharmacy</div></div>
+      <div class="ws-body"><ul>
+        <li>Pharmacy sub-contract &amp; licensure</li>
+        <li>DEA, POA, formulary &amp; narcotic controls</li>
+        <li>Med carts, PEP &amp; ER kits</li>
+        <li>eMAR setup &amp; staff training</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">C</div><div class="ws-title">Clinical Operations</div></div>
+      <div class="ws-body"><ul>
+        <li>P&amp;P review &amp; adoption</li>
+        <li>Forms, medical records, nursing protocols</li>
+        <li>MAC / CQI / IC committee stand-up</li>
+        <li>Staffing schedule posted 7+ days pre-start</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">K</div><div class="ws-title">Credentialing</div></div>
+      <div class="ws-body"><ul>
+        <li>Onboarding-integrated credentialing</li>
+        <li>Provider certifications on file</li>
+        <li>Security clearances coordinated</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">T</div><div class="ws-title">Training &amp; Orientation</div></div>
+      <div class="ws-body"><ul>
+        <li>NEO sessions &amp; schedule</li>
+        <li>EHR end-user training</li>
+        <li>HSA / DON / charge nurse onboarding</li>
+        <li>Continuing education calendar</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">H</div><div class="ws-title">Human Resources</div></div>
+      <div class="ws-body"><ul>
+        <li>Employee roster &amp; retention plan</li>
+        <li>iCIMS, Paylocity, comp &amp; differentials</li>
+        <li>Worker's comp &amp; benefits</li>
+        <li>Communication plan for staff</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">S</div><div class="ws-title">Supplies &amp; Equipment</div></div>
+      <div class="ws-body"><ul>
+        <li>Inventory with outgoing vendor</li>
+        <li>PAR levels &amp; initial orders</li>
+        <li>AED, jump bag, disaster bag</li>
+        <li>Reference library &amp; forms</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">I</div><div class="ws-title">Information Technology</div></div>
+      <div class="ws-body"><ul>
+        <li>Phone, fax, time clock, EKG lines</li>
+        <li>Computer &amp; network install</li>
+        <li>Email provisioning &amp; access</li>
+        <li>EHR environment ready</li>
+      </ul></div>
+    </div>
+    <div class="ws-card">
+      <div class="ws-card-head"><div class="ws-icon">L</div><div class="ws-title">Legal &amp; Finance</div></div>
+      <div class="ws-body"><ul>
+        <li>State, local &amp; federal filings</li>
+        <li>General / professional liability</li>
+        <li>Vendor accounts (McKesson, Medline, Henry Schein)</li>
+        <li>Initial operations audit</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="footer-bar">ARMOR HEALTH</div>
+  <div class="slide-number">07</div>
+</section>
+
+<!-- ==================== SLIDE 7: TIMELINE (GANTT) ==================== -->
+<section class="slide content" data-num="7">
+  <div class="slide-kicker">Transition Timeline</div>
+  <div class="slide-title small">6-Week Transition Plan</div>
+  <div style="font-size:13px; color:#4B5563; margin-bottom:16px;">6-week transition window with a target go-live of <strong style="color:var(--armor-near-black);">July 1, 2026</strong> — exact dates calibrated to contract award.</div>
+  <div class="timeline-wrap">
+    <div class="timeline-scale">
+      <div class="label-col"></div>
+      <div class="col">WEEK 1</div>
+      <div class="col">WEEK 2</div>
+      <div class="col">WEEK 3</div>
+      <div class="col">WEEK 4</div>
+      <div class="col">WEEK 5</div>
+      <div class="col">WEEK 6</div>
+      <div class="col go">JUL 1</div>
+    </div>
+
+    <div class="timeline-row">
+      <div class="label">Executive Kickoff</div>
+      <div class="cell bar-core" style="grid-column: 2 / 3;"></div>
+    </div>
+    <div class="timeline-row">
+      <div class="label">Staffing &amp; Recruitment</div>
+      <div class="cell bar-core" style="grid-column: 2 / 8;"></div>
+    </div>
+    <div class="timeline-row">
+      <div class="label">Credentialing</div>
+      <div class="cell bar-prep" style="grid-column: 2 / 3;"></div>
+      <div class="cell bar-core" style="grid-column: 3 / 8;"></div>
+    </div>
+    <div class="timeline-row">
+      <div class="label">Vendors (Pharmacy, Lab, Radiology)</div>
+      <div class="cell bar-core" style="grid-column: 2 / 6;"></div>
+      <div class="cell bar-prep" style="grid-column: 6 / 8;"></div>
+    </div>
+    <div class="timeline-row">
+      <div class="label">Policies &amp; Procedures</div>
+      <div class="cell bar-core" style="grid-column: 2 / 6;"></div>
+    </div>
+    <div class="timeline-row">
+      <div class="label">IT / EHR Setup</div>
+      <div class="cell bar-core" style="grid-column: 2 / 7;"></div>
+      <div class="cell bar-prep" style="grid-column: 7 / 8;"></div>
+    </div>
+    <div class="timeline-row">
+      <div class="label">Training &amp; NEO</div>
+      <div class="cell bar-core" style="grid-column: 5 / 8;"></div>
+    </div>
+    <div class="timeline-row">
+      <div class="label">Supplies &amp; Equipment</div>
+      <div class="cell bar-prep" style="grid-column: 2 / 5;"></div>
+      <div class="cell bar-core" style="grid-column: 5 / 8;"></div>
+    </div>
+    <div class="timeline-row">
+      <div class="label">Final Dry Runs</div>
+      <div class="cell bar-core" style="grid-column: 7 / 8;"></div>
+    </div>
+    <div class="timeline-row">
+      <div class="label">Day 1 Go-Live (Jul 1)</div>
+      <div class="cell bar-live" style="grid-column: 8 / 9;"></div>
+    </div>
+    <div class="timeline-row">
+      <div class="label">Stabilization &amp; KPI</div>
+      <div class="cell bar-cont" style="grid-column: 8 / 9;"></div>
+    </div>
+
+    <div class="timeline-legend">
+      <div class="lk"><div class="sw bar-prep"></div>Preparation</div>
+      <div class="lk"><div class="sw bar-core"></div>Active Build</div>
+      <div class="lk"><div class="sw bar-live"></div>Go-Live</div>
+      <div class="lk"><div class="sw bar-cont"></div>Stabilization (continues post-live)</div>
+    </div>
+  </div>
+  <div class="footer-bar">ARMOR HEALTH</div>
+  <div class="slide-number">08</div>
+</section>
+
+<!-- ==================== NEW SLIDE: HOW WE RETAIN ==================== -->
+<section class="slide content" data-num="retain">
+  <div class="slide-kicker">Workforce Plan</div>
+  <div class="slide-title">How We Recruit &amp; Retain</div>
+  <div style="font-size:15px; color:#4B5563; margin-bottom:30px; line-height:1.55; max-width:1100px;">Retention is treated as an ongoing operational discipline &mdash; not a one-time event at contract start. We invest in proven programs, market-data discipline, and concierge-level support to make Armor a place where clinicians want to stay.</div>
+  <ul class="workforce-list">
+    <li><strong>Economic Research Institute (ERI)</strong> &mdash; market-based compensation, benchmarked not guessed; reviewed and adjusted regularly</li>
+    <li><strong>Fidelity Nurse Loan Payment</strong> &mdash; recurring student loan repayment program that materially improves nurse retention</li>
+    <li><strong>White Glove Treatment</strong> &mdash; concierge onboarding with dedicated recruiter, expedited credentialing, and a structured 90-day check-in cadence</li>
+    <li><strong>Tiered Nursing Rates</strong> &mdash; differentiated pay structure that rewards experience and certifications, creating a clear path forward without leaving the role</li>
+  </ul>
+  <div class="workforce-banner"><strong>BOTTOM LINE:</strong> Riverside Regional inherits this retention program from Day 1 &mdash; built to keep your clinicians in place.</div>
+  <div class="footer-bar">ARMOR HEALTH</div>
+  <div class="slide-number">09</div>
+</section>
+
+<!-- ==================== SLIDE 8: DATA-DRIVEN APPROACH ==================== -->
+<section class="slide content" data-num="8">
+  <div class="slide-kicker">Clinical Model</div>
+  <div class="slide-title">Data-Driven, Risk-Stratified Care</div>
+  <div class="pitch-split">
+    <div class="pitch-left">
+      <h3>ArmorHealth.AI</h3>
+      <p>Our proprietary data platform ingests clinical, operational, and cost signals to stratify risk at the individual patient level — so our providers spend their time where it matters most.</p>
+      <p>Every Riverside Regional patient is scored at intake. High-risk patients receive dedicated care plans and utilization oversight from the day they enter the facility.</p>
+      <div class="big-quote">"Our risk score is a predictor of future cost and mortality — early identification is the single highest-leverage intervention we make."</div>
+    </div>
+    <div class="pillar-grid">
+      <div class="pillar">
+        <div class="pn">01</div>
+        <div class="pt">Advanced Risk Scoring</div>
+        <div class="pd">Identifies the highest-risk 10% of the population driving the majority of cost and clinical events.</div>
+      </div>
+      <div class="pillar">
+        <div class="pn">02</div>
+        <div class="pt">AI Clinical Co-Pilot</div>
+        <div class="pd">Real-time clinical decision support embedded in the provider workflow.</div>
+      </div>
+      <div class="pillar">
+        <div class="pn">03</div>
+        <div class="pt">Intake Screening</div>
+        <div class="pd">Standardized screening at booking captures BH, chronic conditions, and acute needs immediately.</div>
+      </div>
+      <div class="pillar">
+        <div class="pn">04</div>
+        <div class="pt">Staffing Intelligence</div>
+        <div class="pd">Census- and acuity-based staffing models keep the right people in the right post at the right time.</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bar">ARMOR HEALTH</div>
+  <div class="slide-number">10</div>
+</section>
+
+<!-- ==================== SLIDE 9: WHY ARMOR FOR RIVERSIDE REGIONAL ==================== -->
+<section class="slide content" data-num="11">
+  <div class="slide-kicker">The Close</div>
+  <div class="slide-title">Why Armor for Riverside Regional</div>
+  <div class="why-grid" data-why-grid>
+    <div class="why-box">
+      <div class="why-head">
+        <div class="why-badge">01</div>
+        <div>
+          <div class="why-kicker">Proven Playbook</div>
+          <div class="why-headline">A transition playbook that has been run, refined, and proven.</div>
+        </div>
+      </div>
+      <div class="why-divider"></div>
+      <div class="why-desc">We do not learn transition on your contract. Our checklist contains 140+ tasks across 12 workstreams with named owners — the same structure we executed on our most recent start-ups.</div>
+    </div>
+    <div class="why-box">
+      <div class="why-head">
+        <div class="why-badge">02</div>
+        <div>
+          <div class="why-kicker">Named Accountability</div>
+          <div class="why-headline">A corporate team that is accountable to you by name.</div>
+        </div>
+      </div>
+      <div class="why-divider"></div>
+      <div class="why-desc">From CEO to RVP to clinical leads, you will know who owns every function and how to reach them. No black box, no layers between Riverside Regional and decision-makers.</div>
+    </div>
+    <div class="why-box">
+      <div class="why-head">
+        <div class="why-badge">03</div>
+        <div>
+          <div class="why-kicker">Data-Driven Clinical Rigor</div>
+          <div class="why-headline">Clinical rigor powered by ArmorHealth.AI.</div>
+        </div>
+      </div>
+      <div class="why-divider"></div>
+      <div class="why-desc">Risk stratification, intake screening, and data-driven staffing are not marketing — they are operating tools that drive better outcomes and lower offsite cost for every client we serve.</div>
+    </div>
+    <div class="why-box">
+      <div class="why-head">
+        <div class="why-badge">04</div>
+        <div>
+          <div class="why-kicker">Day 1 Continuity</div>
+          <div class="why-headline">Zero disruption on Day 1 — our standard, not our stretch goal.</div>
+        </div>
+      </div>
+      <div class="why-divider"></div>
+      <div class="why-desc">Medications, offsite appointments, chronic care, and BH continuity are all live the moment the contract starts. We will prove it during transition, not after.</div>
+    </div>
+  </div>
+  <div class="footer-bar">ARMOR HEALTH</div>
+  <div class="slide-number">11</div>
+</section>
+
+<!-- ==================== SLIDE 12: CLOSING ==================== -->
+<section class="slide closing" data-num="12">
+  <div class="title-header">
+    <div class="title-logo">
+      <svg viewBox="0 0 100 100">
+        <path d="M50 8 L88 88 L72 88 L50 40 L28 88 L12 88 Z" fill="#ffffff"/>
+        <rect x="44" y="52" width="12" height="28" fill="#C8102E"/>
+        <rect x="36" y="60" width="28" height="12" fill="#C8102E"/>
+      </svg>
+    </div>
+    <div class="title-brand-text">ARMOR <span class="red">HEALTH</span></div>
+  </div>
+  <div class="closing-main">
+    <div class="k">Thank You, Riverside Regional</div>
+    <h1>Let's raise the<br>standard of care<br>— together.</h1>
+    <div class="tag">We welcome your questions, and we look forward to the opportunity to earn Riverside Regional's partnership.</div>
+  </div>
+  <div class="closing-footer">
+    <div class="closing-contact">
+      <strong>ARMOR HEALTH</strong>
+      Corporate Office · Miami, Florida<br>
+      www.armorhealthcare.com
+    </div>
+    <div>RAISING THE STANDARD OF CARE</div>
+  </div>
+  <div class="slide-number" style="color:#fff;">12</div>
+</section>
+
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  document.getElementById('total').textContent = total;
+  let idx = 0;
+
+  // Set today's date on title slide
+  const d = new Date();
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('presentDate').textContent = `${months[d.getMonth()]} ${d.getFullYear()}`.toUpperCase();
+
+  // Phase-card sequential animation
+  const phaseCards = document.querySelectorAll('.phase-card[data-seq]');
+  const phaseBanner = document.querySelector('.commitment-banner[data-phase-banner]');
+  const whyBoxes = document.querySelectorAll('.why-grid[data-why-grid] .why-box');
+  const journeyStops = document.querySelectorAll('.journey-flow[data-journey-flow] .journey-stop');
+  let phaseTimers = [];
+  let whyTimers = [];
+  let journeyTimers = [];
+
+  function resetPhaseAnim() {
+    phaseTimers.forEach(t => clearTimeout(t));
+    phaseTimers = [];
+    phaseCards.forEach(c => c.classList.remove('in'));
+    if (phaseBanner) phaseBanner.classList.remove('in');
+  }
+
+  function runPhaseAnim() {
+    resetPhaseAnim();
+    // Stagger each card by 500ms
+    phaseCards.forEach((card, i) => {
+      const t = setTimeout(() => card.classList.add('in'), 250 + i * 500);
+      phaseTimers.push(t);
+    });
+    // Commitment banner lands after all four phase cards
+    if (phaseBanner) {
+      const t = setTimeout(() => phaseBanner.classList.add('in'), 250 + phaseCards.length * 500 + 150);
+      phaseTimers.push(t);
+    }
+  }
+
+  function resetWhyAnim() {
+    whyTimers.forEach(t => clearTimeout(t));
+    whyTimers = [];
+    whyBoxes.forEach(b => b.classList.remove('in'));
+  }
+
+  function runWhyAnim() {
+    resetWhyAnim();
+    // Slower stagger: 800ms between each of the four boxes
+    whyBoxes.forEach((box, i) => {
+      const t = setTimeout(() => box.classList.add('in'), 300 + i * 800);
+      whyTimers.push(t);
+    });
+  }
+
+  function resetJourneyAnim() {
+    journeyTimers.forEach(t => clearTimeout(t));
+    journeyTimers = [];
+    journeyStops.forEach(s => s.classList.remove('in'));
+  }
+
+  function runJourneyAnim() {
+    resetJourneyAnim();
+    // Slow stagger: 1200ms between each of the six stops so the speaker
+    // has time to narrate each touchpoint as it appears.
+    journeyStops.forEach((stop, i) => {
+      const t = setTimeout(() => stop.classList.add('in'), 400 + i * 1200);
+      journeyTimers.push(t);
+    });
+  }
+
+  function show(i) {
+    slides.forEach((s, n) => s.classList.toggle('active', n === i));
+    document.getElementById('current').textContent = i + 1;
+    window.scrollTo(0, 0);
+
+    const activeSlide = slides[i];
+    // Phased-approach slide: run phase card stagger
+    if (activeSlide && activeSlide.querySelector('.phase-row[data-phase-row]')) {
+      runPhaseAnim();
+    } else {
+      resetPhaseAnim();
+    }
+    // Why-Armor slide: run why-box stagger (slower)
+    if (activeSlide && activeSlide.querySelector('.why-grid[data-why-grid]')) {
+      runWhyAnim();
+    } else {
+      resetWhyAnim();
+    }
+    // Patient Care Journey slide: run icon stagger (slowest, paced for narration)
+    if (activeSlide && activeSlide.querySelector('.journey-flow[data-journey-flow]')) {
+      runJourneyAnim();
+    } else {
+      resetJourneyAnim();
+    }
+  }
+  function nextSlide() { idx = Math.min(idx + 1, total - 1); show(idx); }
+  function prevSlide() { idx = Math.max(idx - 1, 0); show(idx); }
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); nextSlide(); }
+    if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); prevSlide(); }
+    if (e.key === 'Home') { idx = 0; show(idx); }
+    if (e.key === 'End') { idx = total - 1; show(idx); }
+  });
+
+  // If the deck loads directly on the phase slide, run the anim
+  show(0);
+</script>
+
+</body>
+</html>

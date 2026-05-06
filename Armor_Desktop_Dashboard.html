@@ -1,0 +1,4456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Armor Health — Lucas County Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --bg-tint: #F7F7F7;
+    --bg-2: #FAFAFA;
+    --ink: #111111;
+    --ink-2: #404040;
+    --ink-3: #737373;
+    --ink-4: #A3A3A3;
+    --line: #E5E5E5;
+    --line-2: #F0F0F0;
+
+    --green: #166534;
+    --green-tint: #ECFAEF;
+    --amber: #92400E;
+    --amber-tint: #FEF3C7;
+    --red: #991B1B;
+    --red-tint: #FEE2E2;
+    --blue: #0A4D8C;
+    --blue-tint: #EBF2F9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Geist', -apple-system, system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+
+  /* ============ APP SHELL ============ */
+  .app {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    background: var(--bg);
+    border-right: 1px solid var(--line);
+    padding: 24px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-brand {
+    padding: 0 24px 24px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .brand-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--ink);
+    border-radius: 50%;
+  }
+
+  .brand-name {
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.4px;
+  }
+
+  .brand-product {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-left: 20px;
+  }
+
+  .sidebar-section {
+    padding: 16px 0 8px;
+  }
+
+  .sidebar-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 24px;
+    margin-bottom: 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 24px;
+    color: var(--ink-2);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .nav-item:hover { background: var(--bg-tint); color: var(--ink); }
+
+  .nav-item.active {
+    color: var(--ink);
+    background: var(--bg-tint);
+    border-left-color: var(--ink);
+    font-weight: 600;
+  }
+
+  .nav-icon {
+    width: 18px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+
+  .nav-item.active .nav-icon { color: var(--ink); }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--red);
+    color: white;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 100px;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  /* Site picker in sidebar */
+  .site-picker {
+    margin: 8px 16px;
+    padding: 12px;
+    background: var(--bg-tint);
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .site-picker-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .site-picker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .site-picker-name {
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: -0.2px;
+  }
+
+  .site-picker-chevron {
+    color: var(--ink-3);
+    font-size: 14px;
+  }
+
+  .site-picker-meta {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    margin-top: 4px;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 16px 24px;
+    border-top: 1px solid var(--line);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .user-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .user-name {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .user-role {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ============ MAIN ============ */
+  .main {
+    background: var(--bg);
+    overflow-x: hidden;
+  }
+
+  /* ============ TOP BAR ============ */
+  .topbar {
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+
+  .live-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .topbar-icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg-tint);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--ink);
+    position: relative;
+  }
+
+  .topbar-icon-btn .badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: var(--red);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+  }
+
+  /* ============ CONTENT ============ */
+  .content {
+    padding: 32px;
+    max-width: 1440px;
+  }
+
+  /* ============ PAGE HEADER ============ */
+  .page-header {
+    margin-bottom: 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: end;
+  }
+
+  .page-kicker {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .page-title {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--ink-2);
+    max-width: 600px;
+    line-height: 1.5;
+  }
+
+  .page-stats {
+    display: flex;
+    gap: 24px;
+    align-items: end;
+  }
+
+  .stat-mini {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+  }
+
+  .stat-mini-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .stat-mini-value {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.6px;
+    line-height: 1;
+  }
+
+  /* ============ HERO + KPI ROW ============ */
+  .hero-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .hero-card {
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .hero-card[data-alert]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+
+  .hero-card::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+  }
+
+  .hero-value {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+
+  .hero-number {
+    font-size: 64px;
+    font-weight: 600;
+    letter-spacing: -3px;
+    line-height: 0.95;
+  }
+
+  .hero-unit {
+    font-size: 28px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .hero-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.1);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-family: 'Geist Mono', monospace;
+  }
+
+  .hero-delta-arrow {
+    color: #5EE787;
+  }
+
+  .kpi-tile {
+    background: var(--bg-tint);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .kpi-tile[data-alert] {
+    cursor: pointer;
+  }
+
+  .kpi-tile[data-alert]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .kpi-tile-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .kpi-tile-value {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    margin-bottom: 10px;
+  }
+
+  .kpi-tile-number {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: -1.5px;
+    line-height: 1;
+  }
+
+  .kpi-tile-unit {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink-3);
+  }
+
+  .kpi-tile-delta {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+
+  .kpi-tile-delta.up { color: var(--green); }
+  .kpi-tile-delta.down { color: var(--red); }
+
+  /* ============ SECTIONS ============ */
+  .section-header {
+    padding: 32px 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+
+  .section-link {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--ink);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 1px;
+  }
+
+  /* ============ TWO COL ============ */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* ============ ALERTS ============ */
+  .alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .alert-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .alert-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .alert-card.critical {
+    background: var(--red-tint);
+    border-color: var(--red-tint);
+  }
+
+  .alert-card.warn {
+    background: var(--amber-tint);
+    border-color: var(--amber-tint);
+  }
+
+  .alert-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--bg-tint);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .alert-card.critical .alert-icon {
+    background: var(--red);
+    color: white;
+  }
+
+  .alert-card.warn .alert-icon {
+    background: var(--amber);
+    color: white;
+  }
+
+  .alert-body { min-width: 0; }
+
+  .alert-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+
+  .alert-meta-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .alert-meta {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .alert-action {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    background: white;
+    border: 1px solid var(--ink);
+    padding: 8px 14px;
+    border-radius: 100px;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .alert-card.critical .alert-action {
+    background: var(--ink);
+    color: white;
+  }
+
+  /* ============ SLA CARD ============ */
+  .sla-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .sla-row {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line-2);
+    display: grid;
+    grid-template-columns: 1.6fr 1fr auto auto;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .sla-row:last-child { border-bottom: none; }
+
+  .sla-row-name {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .sla-row-meta {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    margin-top: 3px;
+    letter-spacing: 0.3px;
+  }
+
+  .sla-row-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sla-row-bar {
+    height: 4px;
+    background: var(--line-2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .sla-row-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+
+  .sla-row-fill.good { background: var(--ink); }
+  .sla-row-fill.warn { background: var(--amber); }
+  .sla-row-fill.bad { background: var(--red); }
+
+  .sla-row-fraction {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+  }
+
+  .sla-row-pct {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.6px;
+    line-height: 1;
+    text-align: right;
+    min-width: 60px;
+  }
+
+  .sla-row-status {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 100px;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .sla-row-status.good { background: var(--green-tint); color: var(--green); }
+  .sla-row-status.warn { background: var(--amber-tint); color: var(--amber); }
+  .sla-row-status.bad { background: var(--red-tint); color: var(--red); }
+
+  /* ============ CHART CARD ============ */
+  .chart-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .chart-card-header {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-2);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .chart-card-title-block { display: flex; flex-direction: column; gap: 4px; }
+
+  .chart-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .chart-card-meta {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .chart-area {
+    height: 180px;
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    padding: 16px 0;
+  }
+
+  .chart-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .chart-bars {
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+    height: 140px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .chart-bar {
+    width: 14px;
+    background: var(--ink);
+    border-radius: 2px 2px 0 0;
+  }
+
+  .chart-bar.bench {
+    background: var(--bg-tint);
+    border: 1px solid var(--line);
+  }
+
+  .chart-x-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 0.5px;
+  }
+
+  .chart-legend {
+    display: flex;
+    gap: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line-2);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+
+  .legend-mark {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  }
+
+  .chart-callout {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--bg-tint);
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .chart-callout strong { font-weight: 700; }
+
+  .line-chart {
+    height: 180px;
+    margin: 16px 0;
+  }
+
+  .line-chart svg { width: 100%; height: 100%; display: block; }
+
+  .axis-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line-2);
+  }
+
+  /* ============ INSIGHTS ============ */
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .insight-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  .insight-card[data-alert]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    border-color: var(--ink-3);
+  }
+
+  .insight-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 16px;
+    padding: 4px 10px;
+    background: var(--bg-tint);
+    border-radius: 100px;
+  }
+
+  .insight-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--ink);
+    border-radius: 50%;
+  }
+
+  .insight-headline {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.4px;
+    margin-bottom: 12px;
+  }
+
+  .insight-body {
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.55;
+    margin-bottom: 18px;
+  }
+
+  .insight-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 1px;
+  }
+
+  /* ============ FOOTER ============ */
+  .footer {
+    padding: 32px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-top: 1px solid var(--line);
+    margin-top: 48px;
+  }
+
+  /* ============ DETAIL PANEL ============ */
+  .panel-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 17, 17, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 100;
+  }
+
+  .panel-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .detail-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 560px;
+    max-width: 95vw;
+    background: var(--bg);
+    border-left: 1px solid var(--line);
+    box-shadow: -8px 0 32px rgba(0,0,0,0.08);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    z-index: 101;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .detail-panel.open { transform: translateX(0); }
+
+  .panel-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 1;
+  }
+
+  .panel-header-left { flex: 1; min-width: 0; }
+
+  .panel-header-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  .panel-header-tag.critical { background: var(--red-tint); color: var(--red); }
+  .panel-header-tag.warn { background: var(--amber-tint); color: var(--amber); }
+  .panel-header-tag.info { background: var(--bg-tint); color: var(--ink-2); }
+
+  .panel-header-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .panel-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.6px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .panel-subtitle {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .panel-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg-tint);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--ink);
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+
+  .panel-close:hover { background: var(--line); }
+
+  .panel-body {
+    padding: 24px 28px 100px;
+    flex: 1;
+  }
+
+  .panel-section {
+    margin-bottom: 28px;
+  }
+
+  .panel-section:last-child { margin-bottom: 0; }
+
+  .panel-section-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+  }
+
+  .info-item-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .info-item-value {
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .info-item-value.large {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+  }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .timeline-item:last-child { border-bottom: none; }
+
+  .timeline-time {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-top: 2px;
+    white-space: nowrap;
+  }
+
+  .timeline-content { font-size: 13px; color: var(--ink); line-height: 1.5; }
+  .timeline-content strong { font-weight: 600; }
+
+  .recommendation-box {
+    background: var(--bg-tint);
+    border-radius: 10px;
+    padding: 16px;
+    border-left: 3px solid var(--ink);
+  }
+
+  .recommendation-box.critical { border-left-color: var(--red); }
+
+  .recommendation-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .recommendation-text {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .recommendation-text strong { font-weight: 600; }
+
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .data-row:last-child { border-bottom: none; }
+
+  .data-row-label { font-size: 13px; color: var(--ink-2); }
+  .data-row-value { font-size: 13px; color: var(--ink); font-weight: 600; font-family: 'Geist Mono', monospace; }
+
+  .stat-pills {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .stat-pill {
+    background: var(--bg-tint);
+    border-radius: 10px;
+    padding: 12px 16px;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .stat-pill-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .stat-pill-value {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+
+  .panel-footer {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+    padding: 16px 28px;
+    display: flex;
+    gap: 10px;
+    z-index: 1;
+  }
+
+  .panel-btn {
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Geist', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex: 1;
+  }
+
+  .panel-btn:hover {
+    background: var(--bg-tint);
+    border-color: var(--ink);
+  }
+
+  .panel-btn.primary {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  .panel-btn.primary:hover { background: #000; }
+
+  .panel-btn.danger {
+    background: var(--red-tint);
+    color: var(--red);
+    border-color: var(--red-tint);
+  }
+
+  .panel-btn.danger:hover {
+    background: var(--red);
+    color: white;
+    border-color: var(--red);
+  }
+
+  /* ============ MENTAL HEALTH SECTION ============ */
+  .mh-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 32px 0 16px;
+  }
+
+  .mh-title-block {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+
+  .mh-section-title {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+
+  .mh-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    background: var(--bg-tint);
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  .mh-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--ink);
+    border-radius: 50%;
+  }
+
+  .mh-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .mh-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    background: var(--bg-tint);
+    border-radius: 100px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ink-3);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .mh-toggle:hover {
+    background: var(--line-2);
+  }
+
+  .mh-toggle .mh-toggle-state-on { display: inline; }
+  .mh-toggle .mh-toggle-state-off { display: none; }
+  .mh-toggle.off .mh-toggle-state-on { display: none; }
+  .mh-toggle.off .mh-toggle-state-off { display: inline; }
+
+  .mh-toggle-pill {
+    display: inline-flex;
+    width: 32px;
+    height: 18px;
+    background: var(--ink);
+    border-radius: 100px;
+    position: relative;
+  }
+
+  .mh-toggle-pill::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 16px;
+    width: 14px;
+    height: 14px;
+    background: var(--bg);
+    border-radius: 50%;
+    transition: left 0.2s;
+  }
+
+  .mh-toggle.off .mh-toggle-pill {
+    background: var(--ink-4);
+  }
+
+  .mh-toggle.off .mh-toggle-pill::after {
+    left: 2px;
+  }
+
+  .mh-toggle-label {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .mh-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  /* Watch protocol panel */
+  .watch-panel {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .watch-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+  }
+
+  .watch-panel-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .watch-panel-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .watch-panel-count {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    background: var(--bg-tint);
+    padding: 3px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+
+  .watch-status-pill {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  .watch-status-pill.live {
+    background: var(--green-tint);
+    color: var(--green);
+  }
+
+  .watch-status-pill.live::before {
+    content: '● ';
+  }
+
+  .watch-row {
+    display: grid;
+    grid-template-columns: auto 1.4fr 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line-2);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .watch-row:hover { background: var(--bg-tint); }
+  .watch-row:last-child { border-bottom: none; }
+
+  .watch-row.urgent {
+    background: var(--red-tint);
+  }
+
+  .watch-row.urgent:hover {
+    background: #FCD0CB;
+  }
+
+  .watch-row.warn {
+    background: var(--amber-tint);
+  }
+
+  .watch-row.warn:hover {
+    background: #FCE9B0;
+  }
+
+  .watch-level {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Geist Mono', monospace;
+    font-weight: 700;
+    font-size: 11px;
+    background: var(--ink);
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .watch-level.l1 { background: var(--red); }
+  .watch-level.l2 { background: var(--amber); }
+  .watch-level.l3 { background: var(--ink); }
+
+  .watch-patient { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .watch-patient-id { font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--ink-3); letter-spacing: 0.5px; text-transform: uppercase; }
+  .watch-patient-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .watch-patient-meta { font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--ink-3); margin-top: 2px; }
+
+  .watch-check { display: flex; flex-direction: column; gap: 4px; }
+  .watch-check-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .watch-check-time {
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Geist Mono', monospace;
+  }
+
+  .watch-countdown {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .watch-countdown-value {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.6px;
+    line-height: 1;
+    font-family: 'Geist Mono', monospace;
+  }
+
+  .watch-countdown-value.urgent { color: var(--red); }
+  .watch-countdown-value.warn { color: var(--amber); }
+  .watch-countdown-value.ok { color: var(--ink); }
+
+  .watch-countdown-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  .watch-by {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--bg-tint);
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 70px;
+  }
+
+  .watch-by .by-on { display: inline; }
+  .watch-by .by-off { display: none; }
+  .mh-grid.custody-mode .watch-by .by-on { display: none; }
+  .mh-grid.custody-mode .watch-by .by-off { display: inline; }
+
+  /* MH KPIs */
+  .mh-kpi-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mh-kpi-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .mh-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .mh-kpi-card-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .mh-kpi-card-value {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .mh-kpi-card-number {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -1.2px;
+    line-height: 1;
+  }
+
+  .mh-kpi-card-unit {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-3);
+  }
+
+  .mh-kpi-card-meta {
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  .mh-kpi-card-meta.warn { color: var(--amber); }
+  .mh-kpi-card-meta.good { color: var(--green); }
+
+  /* CUSTODY MODE — when toggle is OFF */
+  .mh-grid.custody-mode .watch-row.urgent,
+  .mh-grid.custody-mode .watch-row.warn {
+    background: var(--bg);
+  }
+
+  .mh-grid.custody-mode .watch-row.urgent:hover,
+  .mh-grid.custody-mode .watch-row.warn:hover {
+    background: var(--bg-tint);
+  }
+
+  .mh-grid.custody-mode .watch-countdown-value.urgent,
+  .mh-grid.custody-mode .watch-countdown-value.warn {
+    color: var(--ink-3);
+  }
+
+  .mh-grid.custody-mode .watch-by {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .mh-grid.custody-mode .watch-status-pill.live {
+    background: var(--bg-tint);
+    color: var(--ink-3);
+  }
+
+  .mh-grid.custody-mode .watch-status-pill.live::before {
+    content: '◌ ';
+  }
+
+  .mh-grid.custody-mode .mh-kpi-card[data-alert="mh-checks"] {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .mh-grid.custody-mode .mh-kpi-card[data-alert="mh-checks"] .mh-kpi-card-meta {
+    color: var(--ink-3);
+  }
+
+  .custody-banner {
+    display: none;
+    grid-column: 1 / -1;
+    background: var(--bg-tint);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  .mh-grid.custody-mode .custody-banner {
+    display: block;
+  }
+
+  .custody-banner strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ============ LOGIN OVERLAY ============ */
+  .login-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .login-overlay.hidden {
+    display: none;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 36px 32px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+  }
+
+  .login-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .login-brand-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--ink);
+    border-radius: 50%;
+  }
+
+  .login-brand-name {
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.4px;
+  }
+
+  .login-product {
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-left: 20px;
+    margin-bottom: 32px;
+  }
+
+  .login-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.6px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .login-subtitle {
+    font-size: 13px;
+    color: var(--ink-3);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .login-field {
+    margin-bottom: 16px;
+  }
+
+  .login-label {
+    display: block;
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .login-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: 'Geist', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .login-input:focus {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.05);
+  }
+
+  .login-error {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+    min-height: 14px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .login-error.show { opacity: 1; }
+
+  .login-button {
+    width: 100%;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-family: 'Geist', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 20px;
+  }
+
+  .login-button:hover { background: #000; }
+
+  .login-footer {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1100px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: relative; height: auto; }
+    .hero-row { grid-template-columns: 1fr 1fr; }
+    .insights-grid, .two-col, .mh-grid { grid-template-columns: 1fr; }
+    .page-header { grid-template-columns: 1fr; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN OVERLAY ============ -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-brand">
+      <span class="login-brand-dot"></span>
+      <span class="login-brand-name">Armor Health</span>
+    </div>
+    <div class="login-product">Operations</div>
+
+    <h1 class="login-title">Sign in</h1>
+    <p class="login-subtitle">Enter your credentials to access the operations dashboard.</p>
+
+    <div class="login-field">
+      <label class="login-label" for="loginPassword">Password</label>
+      <input type="password" class="login-input" id="loginPassword" placeholder="••••••••••" autofocus>
+      <div class="login-error" id="loginError">Incorrect password</div>
+    </div>
+
+    <button class="login-button" id="loginButton">Sign In</button>
+
+    <div class="login-footer">Authorized access only</div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const PASSWORD = 'Armor2004!';
+    const overlay = document.getElementById('loginOverlay');
+    const input = document.getElementById('loginPassword');
+    const button = document.getElementById('loginButton');
+    const errorMsg = document.getElementById('loginError');
+
+    function attemptLogin() {
+      if (input.value === PASSWORD) {
+        overlay.classList.add('hidden');
+      } else {
+        errorMsg.classList.add('show');
+        input.value = '';
+        input.focus();
+        setTimeout(() => errorMsg.classList.remove('show'), 2400);
+      }
+    }
+
+    button.addEventListener('click', attemptLogin);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') attemptLogin();
+      if (errorMsg.classList.contains('show')) {
+        errorMsg.classList.remove('show');
+      }
+    });
+  })();
+</script>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-row">
+        <span class="brand-dot"></span>
+        <span class="brand-name">Armor Health</span>
+      </div>
+      <div class="brand-product">Operations</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workspace</div>
+
+      <div class="site-picker">
+        <div class="site-picker-label">Active Site</div>
+        <div class="site-picker-row">
+          <span class="site-picker-name">Lucas County</span>
+          <span class="site-picker-chevron">⌄</span>
+        </div>
+        <div class="site-picker-meta">ADP 1,247 · 2 alerts</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigate</div>
+      <div class="nav-item active">
+        <span class="nav-icon">⌂</span>
+        <span>Overview</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◷</span>
+        <span>Compliance</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">⚠</span>
+        <span>Alerts</span>
+        <span class="nav-badge">6</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">♡</span>
+        <span>Mental Health</span>
+        <span class="nav-badge">1</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">℞</span>
+        <span>Pharmacy</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◐</span>
+        <span>Insights</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">≣</span>
+        <span>Reports</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Settings</div>
+      <div class="nav-item">
+        <span class="nav-icon">⊞</span>
+        <span>All Sites</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">⚙</span>
+        <span>Preferences</span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar">SH</div>
+        <div>
+          <div class="user-name">Sheriff Hampton</div>
+          <div class="user-role">Lucas County</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <span>Lucas County</span>
+        <span style="color: var(--ink-4)">›</span>
+        <span style="color: var(--ink)">Operations Overview</span>
+      </div>
+      <div class="topbar-right">
+        <span class="live-indicator"><span class="live-dot"></span>Live · 14s ago</span>
+        <span>May 03, 2026 · 14:42 EST</span>
+        <button class="topbar-icon-btn">
+          🔔
+          <span class="badge">6</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div>
+          <div class="page-kicker">Detention Center · May 2026</div>
+          <h1 class="page-title">Good afternoon, Manny.</h1>
+          <p class="page-subtitle">Real-time clinical compliance, hospital utilization, staffing, and documentation integrity for Lucas County, surfaced from primary source systems.</p>
+        </div>
+        <div class="page-stats">
+          <div class="stat-mini">
+            <span class="stat-mini-label">Avg Daily Pop.</span>
+            <span class="stat-mini-value">1,247</span>
+          </div>
+          <div class="stat-mini">
+            <span class="stat-mini-label">Active Patients</span>
+            <span class="stat-mini-value">893</span>
+          </div>
+          <div class="stat-mini">
+            <span class="stat-mini-label">Open Encounters</span>
+            <span class="stat-mini-value">42</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HERO + KPI ROW -->
+      <div class="hero-row">
+
+        <div class="hero-card" data-alert="hero-sla" style="cursor: pointer;">
+          <div class="hero-label">Clinical SLA Compliance</div>
+          <div class="hero-value">
+            <span class="hero-number">98.4</span>
+            <span class="hero-unit">%</span>
+          </div>
+          <div class="hero-delta">
+            <span class="hero-delta-arrow">↑</span>
+            <span>+2.1pp vs. 30-day avg</span>
+          </div>
+        </div>
+
+        <div class="kpi-tile" data-alert="kpi-sendout">
+          <div class="kpi-tile-label">Send-Out Rate</div>
+          <div class="kpi-tile-value">
+            <span class="kpi-tile-number">3.2</span>
+            <span class="kpi-tile-unit">%</span>
+          </div>
+          <div class="kpi-tile-delta up">↓ 38% vs benchmark</div>
+        </div>
+
+        <div class="kpi-tile" data-alert="kpi-staffing">
+          <div class="kpi-tile-label">Staffing Fill</div>
+          <div class="kpi-tile-value">
+            <span class="kpi-tile-number">94.6</span>
+            <span class="kpi-tile-unit">%</span>
+          </div>
+          <div class="kpi-tile-delta down">↓ 2 positions short</div>
+        </div>
+
+        <div class="kpi-tile" data-alert="kpi-documentation">
+          <div class="kpi-tile-label">Documentation</div>
+          <div class="kpi-tile-value">
+            <span class="kpi-tile-number">99.1</span>
+            <span class="kpi-tile-unit">%</span>
+          </div>
+          <div class="kpi-tile-delta up">0 flags · 30 days</div>
+        </div>
+
+      </div>
+
+      <!-- COMPLIANCE + ALERTS -->
+      <div class="section-header">
+        <h2 class="section-title">Needs your attention</h2>
+        <a href="#" class="section-link">All alerts →</a>
+      </div>
+
+      <div class="two-col">
+
+        <div class="sla-card">
+          <div class="sla-row">
+            <div>
+              <div class="sla-row-name">Intake Screening</div>
+              <div class="sla-row-meta">≤ 4 HOURS · LAST 30 DAYS</div>
+            </div>
+            <div class="sla-row-bar-wrap">
+              <div class="sla-row-bar"><div class="sla-row-fill good" style="width:99.7%"></div></div>
+              <div class="sla-row-fraction">847 / 850</div>
+            </div>
+            <div class="sla-row-pct">99.7%</div>
+            <span class="sla-row-status good">On Track</span>
+          </div>
+
+          <div class="sla-row">
+            <div>
+              <div class="sla-row-name">14-Day H&P</div>
+              <div class="sla-row-meta">≤ 14 DAYS · LAST 30 DAYS</div>
+            </div>
+            <div class="sla-row-bar-wrap">
+              <div class="sla-row-bar"><div class="sla-row-fill good" style="width:98.2%"></div></div>
+              <div class="sla-row-fraction">438 / 446</div>
+            </div>
+            <div class="sla-row-pct">98.2%</div>
+            <span class="sla-row-status good">On Track</span>
+          </div>
+
+          <div class="sla-row">
+            <div>
+              <div class="sla-row-name">Sick Call Response</div>
+              <div class="sla-row-meta">≤ 24 HOURS · LAST 7 DAYS</div>
+            </div>
+            <div class="sla-row-bar-wrap">
+              <div class="sla-row-bar"><div class="sla-row-fill warn" style="width:95.4%"></div></div>
+              <div class="sla-row-fraction">187 / 196</div>
+            </div>
+            <div class="sla-row-pct">95.4%</div>
+            <span class="sla-row-status warn">Watch</span>
+          </div>
+
+          <div class="sla-row">
+            <div>
+              <div class="sla-row-name">Chronic Care Visit</div>
+              <div class="sla-row-meta">≤ 90 DAY INTERVAL</div>
+            </div>
+            <div class="sla-row-bar-wrap">
+              <div class="sla-row-bar"><div class="sla-row-fill good" style="width:97.8%"></div></div>
+              <div class="sla-row-fraction">312 / 319</div>
+            </div>
+            <div class="sla-row-pct">97.8%</div>
+            <span class="sla-row-status good">On Track</span>
+          </div>
+
+          <div class="sla-row">
+            <div>
+              <div class="sla-row-name">MH 14-Day Follow-Up</div>
+              <div class="sla-row-meta">≤ 14 DAYS POST-INTAKE</div>
+            </div>
+            <div class="sla-row-bar-wrap">
+              <div class="sla-row-bar"><div class="sla-row-fill good" style="width:99.0%"></div></div>
+              <div class="sla-row-fraction">198 / 200</div>
+            </div>
+            <div class="sla-row-pct">99.0%</div>
+            <span class="sla-row-status good">On Track</span>
+          </div>
+
+          <div class="sla-row">
+            <div>
+              <div class="sla-row-name">Medication Administration</div>
+              <div class="sla-row-meta">PASS RATE · LAST 24 HOURS</div>
+            </div>
+            <div class="sla-row-bar-wrap">
+              <div class="sla-row-bar"><div class="sla-row-fill good" style="width:99.6%"></div></div>
+              <div class="sla-row-fraction">2,847 / 2,858</div>
+            </div>
+            <div class="sla-row-pct">99.6%</div>
+            <span class="sla-row-status good">On Track</span>
+          </div>
+        </div>
+
+        <div class="alerts-list">
+
+          <div class="alert-card critical" data-alert="hp-risk">
+            <div class="alert-icon">!</div>
+            <div class="alert-body">
+              <div class="alert-title">H&P at risk in 36 hours</div>
+              <div class="alert-meta-row">
+                <span class="alert-meta">PT-04829 · Unit 2B · K. Jones</span>
+                <span class="alert-meta">2 min ago</span>
+              </div>
+            </div>
+            <button class="alert-action" onclick="event.stopPropagation();openPanel('hp-risk')">View</button>
+          </div>
+
+          <div class="alert-card warn" data-alert="sick-call">
+            <div class="alert-icon">!</div>
+            <div class="alert-body">
+              <div class="alert-title">Sick call backlog approaching threshold</div>
+              <div class="alert-meta-row">
+                <span class="alert-meta">9 open · target ≤ 6</span>
+                <span class="alert-meta">17 min ago</span>
+              </div>
+            </div>
+            <button class="alert-action" onclick="event.stopPropagation();openPanel('sick-call')">Triage</button>
+          </div>
+
+          <div class="alert-card warn" data-alert="deterioration">
+            <div class="alert-icon">!</div>
+            <div class="alert-body">
+              <div class="alert-title">Patient flagged: deterioration risk</div>
+              <div class="alert-meta-row">
+                <span class="alert-meta">PT-03127 · Sepsis-V2 model</span>
+                <span class="alert-meta">42 min ago</span>
+              </div>
+            </div>
+            <button class="alert-action" onclick="event.stopPropagation();openPanel('deterioration')">View</button>
+          </div>
+
+          <div class="alert-card" data-alert="credential">
+            <div class="alert-icon">i</div>
+            <div class="alert-body">
+              <div class="alert-title">RN credential expires in 30 days</div>
+              <div class="alert-meta-row">
+                <span class="alert-meta">M. Rivera · #RN492817</span>
+                <span class="alert-meta">1 hr ago</span>
+              </div>
+            </div>
+            <button class="alert-action" onclick="event.stopPropagation();openPanel('credential')">Renew</button>
+          </div>
+
+          <div class="alert-card" data-alert="offsite">
+            <div class="alert-icon">i</div>
+            <div class="alert-body">
+              <div class="alert-title">Offsite decision supported & logged</div>
+              <div class="alert-meta-row">
+                <span class="alert-meta">PT-04621 · cardiac · Dr. Hashi</span>
+                <span class="alert-meta">2 hrs ago</span>
+              </div>
+            </div>
+            <button class="alert-action" onclick="event.stopPropagation();openPanel('offsite')">Audit</button>
+          </div>
+
+          <div class="alert-card" data-alert="staffing">
+            <div class="alert-icon">!</div>
+            <div class="alert-body">
+              <div class="alert-title">Staffing gap predicted: Sat night</div>
+              <div class="alert-meta-row">
+                <span class="alert-meta">2 RN · 89% confidence</span>
+                <span class="alert-meta">3 hrs ago</span>
+              </div>
+            </div>
+            <button class="alert-action" onclick="event.stopPropagation();openPanel('staffing')">Plan</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MENTAL HEALTH -->
+      <div class="mh-header-row">
+        <div class="mh-title-block">
+          <span class="mh-tag">Pillar 02</span>
+          <h2 class="mh-section-title">Mental Health</h2>
+        </div>
+        <div class="mh-controls">
+          <div class="mh-toggle" id="mhToggle" onclick="toggleMHMode()">
+            <span class="mh-toggle-label">Watch checks by Armor</span>
+            <span class="mh-toggle-pill"></span>
+            <span class="mh-toggle-state-on">ON</span>
+            <span class="mh-toggle-state-off">OFF</span>
+          </div>
+          <a href="#" class="section-link">All MH metrics →</a>
+        </div>
+      </div>
+
+      <div class="mh-grid" id="mhGrid">
+
+        <div class="custody-banner">
+          <strong>Custody-managed watches.</strong> At this site, suicide watch checks are performed by sheriff's deputies, not Armor staff. The system maintains visibility for situational awareness and for use during incident review, but does not grade Armor against check compliance.
+        </div>        <!-- Watch panel -->
+        <div class="watch-panel">
+          <div class="watch-panel-header">
+            <div class="watch-panel-title-row">
+              <div class="watch-panel-title">Active Suicide Watch</div>
+              <span class="watch-panel-count">7 patients</span>
+            </div>
+            <span class="watch-status-pill live">Live · 15-min protocol</span>
+          </div>
+
+          <div class="watch-row urgent" data-alert="watch-urgent">
+            <div class="watch-level l1">L1</div>
+            <div class="watch-patient">
+              <div class="watch-patient-id">PT-04982</div>
+              <div class="watch-patient-name">Patient 04982</div>
+              <div class="watch-patient-meta">Constant Watch · 18 hrs</div>
+            </div>
+            <div class="watch-check">
+              <div class="watch-check-label">Last Check</div>
+              <div class="watch-check-time">14:24</div>
+            </div>
+            <div class="watch-countdown">
+              <div class="watch-countdown-value urgent">+3:14</div>
+              <div class="watch-countdown-label">Overdue</div>
+            </div>
+            <div class="watch-by"><span class="by-on">Armor</span><span class="by-off">Sheriff</span></div>
+          </div>
+
+          <div class="watch-row warn" data-alert="watch-warn">
+            <div class="watch-level l2">L2</div>
+            <div class="watch-patient">
+              <div class="watch-patient-id">PT-04891</div>
+              <div class="watch-patient-name">Patient 04891</div>
+              <div class="watch-patient-meta">15-min · 2.5 days</div>
+            </div>
+            <div class="watch-check">
+              <div class="watch-check-label">Last Check</div>
+              <div class="watch-check-time">14:30</div>
+            </div>
+            <div class="watch-countdown">
+              <div class="watch-countdown-value warn">2:48</div>
+              <div class="watch-countdown-label">Until next</div>
+            </div>
+            <div class="watch-by"><span class="by-on">Armor</span><span class="by-off">Sheriff</span></div>
+          </div>
+
+          <div class="watch-row" data-alert="watch-ok">
+            <div class="watch-level l2">L2</div>
+            <div class="watch-patient">
+              <div class="watch-patient-id">PT-04863</div>
+              <div class="watch-patient-name">Patient 04863</div>
+              <div class="watch-patient-meta">15-min · 4 days</div>
+            </div>
+            <div class="watch-check">
+              <div class="watch-check-label">Last Check</div>
+              <div class="watch-check-time">14:36</div>
+            </div>
+            <div class="watch-countdown">
+              <div class="watch-countdown-value ok">8:12</div>
+              <div class="watch-countdown-label">Until next</div>
+            </div>
+            <div class="watch-by"><span class="by-on">Armor</span><span class="by-off">Sheriff</span></div>
+          </div>
+
+          <div class="watch-row" data-alert="watch-ok">
+            <div class="watch-level l3">L3</div>
+            <div class="watch-patient">
+              <div class="watch-patient-id">PT-04774</div>
+              <div class="watch-patient-name">Patient 04774</div>
+              <div class="watch-patient-meta">30-min · 6 days</div>
+            </div>
+            <div class="watch-check">
+              <div class="watch-check-label">Last Check</div>
+              <div class="watch-check-time">14:21</div>
+            </div>
+            <div class="watch-countdown">
+              <div class="watch-countdown-value ok">15:34</div>
+              <div class="watch-countdown-label">Until next</div>
+            </div>
+            <div class="watch-by"><span class="by-on">Armor</span><span class="by-off">Sheriff</span></div>
+          </div>
+
+          <div class="watch-row" data-alert="watch-ok">
+            <div class="watch-level l3">L3</div>
+            <div class="watch-patient">
+              <div class="watch-patient-id">PT-04601</div>
+              <div class="watch-patient-name">Patient 04601</div>
+              <div class="watch-patient-meta">30-min · 8 days</div>
+            </div>
+            <div class="watch-check">
+              <div class="watch-check-label">Last Check</div>
+              <div class="watch-check-time">14:18</div>
+            </div>
+            <div class="watch-countdown">
+              <div class="watch-countdown-value ok">12:31</div>
+              <div class="watch-countdown-label">Until next</div>
+            </div>
+            <div class="watch-by"><span class="by-on">Armor</span><span class="by-off">Sheriff</span></div>
+          </div>
+
+        </div>
+
+        <!-- MH KPIs -->
+        <div class="mh-kpi-stack">
+
+          <div class="mh-kpi-card" data-alert="mh-intake">
+            <div class="mh-kpi-card-label">Intake Risk Screening</div>
+            <div class="mh-kpi-card-value">
+              <span class="mh-kpi-card-number">100</span>
+              <span class="mh-kpi-card-unit">%</span>
+            </div>
+            <div class="mh-kpi-card-meta good">12 of 12 high-risk flags acted on within 4 hrs</div>
+          </div>
+
+          <div class="mh-kpi-card" data-alert="mh-14day">
+            <div class="mh-kpi-card-label">14-Day MH Assessment</div>
+            <div class="mh-kpi-card-value">
+              <span class="mh-kpi-card-number">99.0</span>
+              <span class="mh-kpi-card-unit">%</span>
+            </div>
+            <div class="mh-kpi-card-meta">198 of 200 · last 30 days</div>
+          </div>
+
+          <div class="mh-kpi-card" data-alert="mh-checks">
+            <div class="mh-kpi-card-label">Watch Check Compliance</div>
+            <div class="mh-kpi-card-value">
+              <span class="mh-kpi-card-number">98.7</span>
+              <span class="mh-kpi-card-unit">%</span>
+            </div>
+            <div class="mh-kpi-card-meta warn">1 missed check today · 76 yesterday</div>
+          </div>
+
+          <div class="mh-kpi-card" data-alert="mh-staffing">
+            <div class="mh-kpi-card-label">MH Staffing Hours</div>
+            <div class="mh-kpi-card-value">
+              <span class="mh-kpi-card-number">87</span>
+              <span class="mh-kpi-card-unit">% of contract</span>
+            </div>
+            <div class="mh-kpi-card-meta warn">LCSW: 92% · Psych: 81%</div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- CHARTS -->
+      <div class="section-header">
+        <h2 class="section-title">Trends</h2>
+        <a href="#" class="section-link">Detail →</a>
+      </div>
+
+      <div class="two-col">
+
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title-block">
+              <div class="chart-card-title">Send-Outs vs. Industry Benchmark</div>
+              <div class="chart-card-meta">Per 100 ADP · Last 6 months</div>
+            </div>
+          </div>
+          <div class="chart-area">
+            <div class="chart-col">
+              <div class="chart-bars">
+                <div class="chart-bar" style="height:32%"></div>
+                <div class="chart-bar bench" style="height:52%"></div>
+              </div>
+              <div class="chart-x-label">DEC</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bars">
+                <div class="chart-bar" style="height:36%"></div>
+                <div class="chart-bar bench" style="height:54%"></div>
+              </div>
+              <div class="chart-x-label">JAN</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bars">
+                <div class="chart-bar" style="height:30%"></div>
+                <div class="chart-bar bench" style="height:50%"></div>
+              </div>
+              <div class="chart-x-label">FEB</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bars">
+                <div class="chart-bar" style="height:28%"></div>
+                <div class="chart-bar bench" style="height:51%"></div>
+              </div>
+              <div class="chart-x-label">MAR</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bars">
+                <div class="chart-bar" style="height:26%"></div>
+                <div class="chart-bar bench" style="height:53%"></div>
+              </div>
+              <div class="chart-x-label">APR</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bars">
+                <div class="chart-bar" style="height:24%"></div>
+                <div class="chart-bar bench" style="height:52%"></div>
+              </div>
+              <div class="chart-x-label">MAY</div>
+            </div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item"><span class="legend-mark" style="background: var(--ink)"></span>Armor (Lucas)</div>
+            <div class="legend-item"><span class="legend-mark" style="background: var(--bg-tint); border: 1px solid var(--line)"></span>Industry Benchmark</div>
+          </div>
+          <div class="chart-callout">
+            <strong>53 fewer send-outs YTD</strong> than benchmark. Estimated avoided cost to county: <strong>$184,000</strong>.
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div class="chart-card-title-block">
+              <div class="chart-card-title">Documentation Integrity Score</div>
+              <div class="chart-card-meta">Composite · 90-day trend</div>
+            </div>
+          </div>
+          <div class="line-chart">
+            <svg viewBox="0 0 400 180" preserveAspectRatio="none">
+              <line x1="0" y1="20" x2="400" y2="20" stroke="#F0F0F0" stroke-width="1"/>
+              <line x1="0" y1="60" x2="400" y2="60" stroke="#F0F0F0" stroke-width="1"/>
+              <line x1="0" y1="100" x2="400" y2="100" stroke="#F0F0F0" stroke-width="1"/>
+              <line x1="0" y1="140" x2="400" y2="140" stroke="#F0F0F0" stroke-width="1"/>
+
+              <path d="M 0 80 L 30 70 L 60 75 L 90 60 L 120 50 L 150 55 L 180 40 L 210 35 L 240 30 L 270 25 L 300 22 L 330 20 L 360 18 L 400 15"
+                    fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round"/>
+
+              <circle cx="400" cy="15" r="4" fill="#111111"/>
+            </svg>
+          </div>
+          <div class="axis-labels">
+            <span>Feb 03</span>
+            <span>May 03</span>
+          </div>
+          <div class="chart-callout">
+            <strong>Zero falsification flags</strong> in the last 30 days. Composite of copy-paste detection, timestamp anomalies, badge cross-reference, and protocol adherence.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- INSIGHTS -->
+      <div class="section-header">
+        <h2 class="section-title">What we're noticing</h2>
+        <a href="#" class="section-link">More insights →</a>
+      </div>
+
+      <div class="insights-grid">
+
+        <div class="insight-card" data-alert="insight-cost" style="cursor: pointer;">
+          <span class="insight-tag">Cost Avoidance</span>
+          <div class="insight-headline">Send-out savings tracking 41% above benchmark this quarter.</div>
+          <div class="insight-body">Onsite chronic care intensification has reduced ER transports by an estimated 22 events QTD. Projected county savings: $76K through end of quarter.</div>
+          <a href="#" class="insight-action">View detail →</a>
+        </div>
+
+        <div class="insight-card" data-alert="insight-medication" style="cursor: pointer;">
+          <span class="insight-tag">Risk Forecast</span>
+          <div class="insight-headline">Medication Compliance</div>
+          <div class="insight-body">Model identified pattern of missed med admins plus abnormal vitals across three patients. Care plan adjustments recommended; clinical lead notified.</div>
+          <a href="#" class="insight-action">Review cases →</a>
+        </div>
+
+        <div class="insight-card" data-alert="insight-staffing" style="cursor: pointer;">
+          <span class="insight-tag">Staffing</span>
+          <div class="insight-headline">Saturday night shift fill risk requires action by Wednesday.</div>
+          <div class="insight-body">Predicted 2-RN shortfall on Sat 5/9 based on PTO + open requisitions. Per diem outreach initiated; backup plan ready.</div>
+          <a href="#" class="insight-action">Action plan →</a>
+        </div>
+
+      </div>
+
+      <div class="footer">
+        <span>Armor Health · Operations Intelligence · v3.1</span>
+        <span>Sources: EHR · Diamond · OffsiteLog · Paylocity · Badge Access</span>
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<!-- ============ DETAIL PANEL ============ -->
+<div class="panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
+
+<aside class="detail-panel" id="detailPanel">
+  <div class="panel-header">
+    <div class="panel-header-left">
+      <div class="panel-header-tag" id="panelTag">Critical · Action Required</div>
+      <h2 class="panel-title" id="panelTitle">Title</h2>
+      <div class="panel-subtitle" id="panelSubtitle">Subtitle</div>
+    </div>
+    <button class="panel-close" onclick="closePanel()">✕</button>
+  </div>
+  <div class="panel-body" id="panelBody">
+    <!-- content injected here -->
+  </div>
+  <div class="panel-footer" id="panelFooter">
+    <!-- buttons injected here -->
+  </div>
+</aside>
+
+<script>
+const ALERT_DETAILS = {
+  'hero-sla': {
+    tagClass: 'info',
+    tagText: 'Compliance · Live View',
+    title: 'Clinical SLA Compliance — 98.4%',
+    subtitle: 'All measures · Last 30 days · Lucas County Detention Center',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Composite Score Breakdown</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Current</div>
+            <div class="stat-pill-value">98.4%</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">30-Day Avg</div>
+            <div class="stat-pill-value">96.3%</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">YTD</div>
+            <div class="stat-pill-value">95.8%</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Industry Avg</div>
+            <div class="stat-pill-value" style="color: var(--ink-3)">89.4%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">By Measure</div>
+        <div class="data-row">
+          <span class="data-row-label">Intake Screening · ≤4 hrs</span>
+          <span class="data-row-value" style="color: var(--green)">99.7%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">14-Day H&P</span>
+          <span class="data-row-value" style="color: var(--green)">98.2%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Sick Call Response · ≤24 hrs</span>
+          <span class="data-row-value" style="color: var(--amber)">95.4%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Chronic Care · 90-day interval</span>
+          <span class="data-row-value" style="color: var(--green)">97.8%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">MH 14-Day Follow-Up</span>
+          <span class="data-row-value" style="color: var(--green)">99.0%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Medication Administration</span>
+          <span class="data-row-value" style="color: var(--green)">99.6%</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">By Unit</div>
+        <div class="data-row">
+          <span class="data-row-label">Unit 1A — Intake</span>
+          <span class="data-row-value" style="color: var(--green)">99.2%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Unit 2B — General</span>
+          <span class="data-row-value" style="color: var(--amber)">96.1%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Unit 3A — Medical</span>
+          <span class="data-row-value" style="color: var(--green)">99.5%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Unit 4A — Mental Health</span>
+          <span class="data-row-value" style="color: var(--green)">98.7%</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">What's Driving the +2.1pp Gain</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">AI Analysis</div>
+          <div class="recommendation-text">Improvement primarily driven by <strong>sick call response time</strong> at Unit 2B (up from 91% to 95% over 30 days). Cause: revised triage protocol implemented April 12 + addition of float nurse on day shift. Maintaining this gain depends on backfill plan for Sat 5/9 (see Staffing alert).</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Active Risks</div>
+        <div class="timeline-item">
+          <div class="timeline-time">36 hrs</div>
+          <div class="timeline-content"><strong>1 H&P at risk of breach</strong> — PT-04829 (Unit 2B)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">7 days</div>
+          <div class="timeline-content"><strong>Sick Call backlog</strong> trending toward threshold — 9 open vs target ≤6</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">14 days</div>
+          <div class="timeline-content"><strong>3 Chronic Care visits</strong> approaching 90-day interval limit</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Open Compliance Dashboard</button>
+      <button class="panel-btn">Export Report</button>
+    `
+  },
+
+  'insight-cost': {
+    tagClass: 'info',
+    tagText: 'Cost Avoidance · Insight Detail',
+    title: 'Send-out savings tracking 41% above benchmark.',
+    subtitle: 'Quarter-to-date · Updated 8 min ago · Model v4.2',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">QTD Performance</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Send-Outs Avoided</div>
+            <div class="stat-pill-value" style="color: var(--green)">22</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">vs Benchmark</div>
+            <div class="stat-pill-value" style="color: var(--green)">+41%</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Projected Savings</div>
+            <div class="stat-pill-value">$76K</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">YTD Savings</div>
+            <div class="stat-pill-value">$184K</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">What Drove the Avoided Send-Outs</div>
+        <div class="data-row">
+          <span class="data-row-label">Onsite cardiac evaluation (vs. ED)</span>
+          <span class="data-row-value">8 cases</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Onsite IV therapy initiation</span>
+          <span class="data-row-value">5 cases</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Chronic care intensification</span>
+          <span class="data-row-value">4 cases</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Mental health crisis stabilization</span>
+          <span class="data-row-value">3 cases</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Wound care management</span>
+          <span class="data-row-value">2 cases</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Cost Comparison</div>
+        <div class="data-row">
+          <span class="data-row-label">Avg ED transfer (transport + visit)</span>
+          <span class="data-row-value">$3,840</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Avg onsite intensive care episode</span>
+          <span class="data-row-value">$340</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Avg deputy time saved (transport)</span>
+          <span class="data-row-value">4.2 hrs / event</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">AI Reasoning</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Why this is happening</div>
+          <div class="recommendation-text">Onsite chronic care intensification (additional weekly nurse rounds for top-decile risk patients) is preventing acute exacerbations that would have required ED transfer. Model attributes 18 of 22 avoided cases to this protocol. Recommend continuing through Q3.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Forward Projection</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">If trend continues</div>
+          <div class="recommendation-text">QTD savings of <strong>$76K</strong> projects to <strong>$304K annualized</strong>. This represents direct county avoidance of ED costs, plus deputy time savings (~88 hrs/year) that would otherwise be allocated to medical transport.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">View Full Send-Out Log</button>
+      <button class="panel-btn">Share with County</button>
+    `
+  },
+
+  'insight-medication': {
+    tagClass: 'warn',
+    tagText: 'Risk Forecast · 3 patients flagged',
+    title: 'Three chronic patients trending toward acute deterioration.',
+    subtitle: 'Pattern: missed med admins + abnormal vitals · Clinical lead notified',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Patients Flagged</div>
+        <div class="data-row">
+          <span class="data-row-label">PT-03127 · F, 38 · Unit 4A</span>
+          <span class="data-row-value" style="color: var(--red)">High Risk</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">PT-04412 · M, 56 · Unit 2B</span>
+          <span class="data-row-value" style="color: var(--amber)">Moderate</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">PT-03891 · M, 44 · Unit 3A</span>
+          <span class="data-row-value" style="color: var(--amber)">Moderate</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Pattern Detected</div>
+        <div class="recommendation-box critical">
+          <div class="recommendation-label">Common signal across all three</div>
+          <div class="recommendation-text"><strong>Adherence dropping below 75%</strong> for chronic medications (HTN, DM, HIV) in the past 14 days, paired with <strong>abnormal vitals trending</strong> over the same window. Historical pattern in similar patients shows 60-70% probability of acute exacerbation within 21 days if unaddressed.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">PT-03127 Detail (highest risk)</div>
+        <div class="data-row">
+          <span class="data-row-label">Diagnosis</span>
+          <span class="data-row-value">Type 2 DM · Recent UTI</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Med adherence (last 14d)</span>
+          <span class="data-row-value" style="color: var(--red)">62%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Last A1C</span>
+          <span class="data-row-value" style="color: var(--amber)">8.4 (up from 7.1)</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Vitals trend</span>
+          <span class="data-row-value" style="color: var(--amber)">HR ↑, Temp ↑</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recommended Care Plan Adjustments</div>
+        <div class="timeline-item">
+          <div class="timeline-time">PT-03127</div>
+          <div class="timeline-content">DOT (directly observed therapy) for 7 days · provider re-evaluation · consider broader infection workup</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">PT-04412</div>
+          <div class="timeline-content">Adherence counseling · medication side-effect review · consider regimen simplification</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">PT-03891</div>
+          <div class="timeline-content">Mental health consult (depression screening) · adherence support intervention</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Status</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Notifications Sent</div>
+          <div class="recommendation-text">Clinical lead notified at 14:34. Provider on call (Dr. Hashi) acknowledged. Care plan adjustments pending review at next clinical huddle (tomorrow 08:00).</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Open All 3 Charts</button>
+      <button class="panel-btn">Schedule Huddle</button>
+    `
+  },
+
+  'insight-staffing': {
+    tagClass: 'warn',
+    tagText: 'Staffing · Action by Wednesday',
+    title: 'Saturday night shift fill risk requires action by Wednesday.',
+    subtitle: 'Predicted 2-RN shortfall · Sat 5/9 · 89% confidence',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Forecast</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Date</div>
+            <div class="stat-pill-value">Sat 5/9</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Shift</div>
+            <div class="stat-pill-value">19:00–07:00</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Gap</div>
+            <div class="stat-pill-value" style="color: var(--amber)">2 RN</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Withhold Risk</div>
+            <div class="stat-pill-value" style="color: var(--red)">$4,800</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Why the Gap</div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 1</div>
+          <div class="timeline-content"><strong>2 PTO requests</strong> approved for Sat 5/9 (J. Patel, T. Williams)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 2</div>
+          <div class="timeline-content"><strong>1 open requisition</strong> not yet filled (RN Night, posted 14 days)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 3</div>
+          <div class="timeline-content">Per diem availability that weekend: limited (3 of usual 8 available)</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Action Already Taken</div>
+        <div class="data-row">
+          <span class="data-row-label">Per diem outreach (3 available)</span>
+          <span class="data-row-value" style="color: var(--green)">In progress</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">OT offer to night staff</span>
+          <span class="data-row-value" style="color: var(--ink-3)">Pending</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Agency request</span>
+          <span class="data-row-value" style="color: var(--ink-3)">Backup option</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recommended Action</div>
+        <div class="recommendation-box critical">
+          <div class="recommendation-label">Decision needed by Wed 5/6</div>
+          <div class="recommendation-text">Send OT offer to night RNs <strong>today</strong> (24-hour response window). If under-filled by Wed AM, escalate to agency. Agency lead time = 48 hours, so Wed is the latest decision point to avoid contract withhold exposure of $4,800.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Cost Trade-Off</div>
+        <div class="data-row">
+          <span class="data-row-label">If shortfall occurs (withhold)</span>
+          <span class="data-row-value" style="color: var(--red)">$4,800</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">OT premium (2 RN × 12 hrs)</span>
+          <span class="data-row-value">$1,800</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Agency rate (2 RN × 12 hrs)</span>
+          <span class="data-row-value">$3,200</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Net savings via OT</span>
+          <span class="data-row-value" style="color: var(--green)">$3,000</span>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Send OT Offer Now</button>
+      <button class="panel-btn">Contact Agency</button>
+      <button class="panel-btn">View Schedule</button>
+    `
+  },
+
+  'hp-risk': {
+    tagClass: 'critical',
+    tagText: 'Critical · Action Required',
+    title: 'H&P at risk in 36 hours',
+    subtitle: 'PT-04829 · Unit 2B · Assigned to K. Jones, RN',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Patient Summary</div>
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Patient</div>
+            <div class="info-item-value">PT-04829</div>
+          </div>
+          <div>
+            <div class="info-item-label">Demo</div>
+            <div class="info-item-value">M, 47 · Unit 2B-14</div>
+          </div>
+          <div>
+            <div class="info-item-label">Booked</div>
+            <div class="info-item-value">Mar 12, 2026</div>
+          </div>
+          <div>
+            <div class="info-item-label">Length of Stay</div>
+            <div class="info-item-value">52 days</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">SLA Status</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Hours Remaining</div>
+            <div class="stat-pill-value" style="color: var(--red)">36</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Required By</div>
+            <div class="stat-pill-value">May 5</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">SLA Target</div>
+            <div class="stat-pill-value">14 days</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Compliance Timeline</div>
+        <div class="timeline-item">
+          <div class="timeline-time">Mar 12 · 09:14</div>
+          <div class="timeline-content"><strong>Intake screening</strong> completed by S. Martinez, RN</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Mar 12 · 14:22</div>
+          <div class="timeline-content">H&P scheduled with provider on call (was: Dr. Hashi)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Mar 19</div>
+          <div class="timeline-content">H&P appointment <strong>missed</strong> — patient at offsite court appearance</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Mar 24</div>
+          <div class="timeline-content">Rescheduled — patient declined ("not feeling well today")</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">May 5 · 02:42</div>
+          <div class="timeline-content"><strong>System alert generated</strong> — 36 hours until SLA breach</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recommended Action</div>
+        <div class="recommendation-box critical">
+          <div class="recommendation-label">Suggested by Compliance Engine</div>
+          <div class="recommendation-text">Schedule H&P for <strong>today's evening clinic block</strong> (Dr. Hashi available 18:00-20:00). Notify K. Jones to escort patient. If patient refuses, document refusal and notify HSA per protocol.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Schedule H&P Now</button>
+      <button class="panel-btn">Reassign Provider</button>
+      <button class="panel-btn">Mark as Refused</button>
+    `
+  },
+
+  'sick-call': {
+    tagClass: 'warn',
+    tagText: 'Watch · Approaching Threshold',
+    title: 'Sick call backlog approaching threshold',
+    subtitle: '9 open requests · target maximum 6',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Backlog Status</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Open Requests</div>
+            <div class="stat-pill-value" style="color: var(--amber)">9</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Threshold</div>
+            <div class="stat-pill-value">6</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Avg Wait</div>
+            <div class="stat-pill-value">18h</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Open Requests by Priority</div>
+        <div class="data-row">
+          <span class="data-row-label">Routine — under 24h</span>
+          <span class="data-row-value">5</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Routine — over 24h</span>
+          <span class="data-row-value" style="color: var(--amber)">3</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Urgent (under 4h)</span>
+          <span class="data-row-value">1</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Contributing Factors</div>
+        <div class="timeline-item">
+          <div class="timeline-time">Today</div>
+          <div class="timeline-content">RN call-out: <strong>D. Patterson</strong> (day shift). No backfill confirmed.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Today</div>
+          <div class="timeline-content">Booking volume +18% above 30-day average</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Yesterday</div>
+          <div class="timeline-content">Provider clinic ran 90min over schedule — pushed sick call into evening</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recommended Action</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Suggested by Compliance Engine</div>
+          <div class="recommendation-text">Triage 3 oldest routine requests for nursing-only assessment. Authorize evening clinic extension for the 1 urgent request. SLA breach unlikely if action taken within 4 hours.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Open Triage Queue</button>
+      <button class="panel-btn">Request Float Nurse</button>
+    `
+  },
+
+  'deterioration': {
+    tagClass: 'warn',
+    tagText: 'Clinical · Risk Detected',
+    title: 'Patient flagged: deterioration risk',
+    subtitle: 'PT-03127 · Sepsis-V2 model · 87% confidence',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Patient Summary</div>
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Patient</div>
+            <div class="info-item-value">PT-03127</div>
+          </div>
+          <div>
+            <div class="info-item-label">Demo</div>
+            <div class="info-item-value">F, 38 · Unit 4A-08</div>
+          </div>
+          <div>
+            <div class="info-item-label">Active Diagnoses</div>
+            <div class="info-item-value">Type 2 DM · UTI (treated)</div>
+          </div>
+          <div>
+            <div class="info-item-label">LOS</div>
+            <div class="info-item-value">8 days</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Trending Vitals (last 24h)</div>
+        <div class="data-row">
+          <span class="data-row-label">Heart Rate</span>
+          <span class="data-row-value" style="color: var(--amber)">↑ 96 → 112 bpm</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Respiratory Rate</span>
+          <span class="data-row-value" style="color: var(--amber)">↑ 18 → 22</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Temperature</span>
+          <span class="data-row-value" style="color: var(--red)">↑ 99.1 → 101.4 °F</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">SpO₂</span>
+          <span class="data-row-value">96% (stable)</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">BP</span>
+          <span class="data-row-value">118/76 (stable)</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Model Reasoning</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Sepsis-V2 · 87% Confidence</div>
+          <div class="recommendation-text">Pattern matches early sepsis signature: rising temp + tachycardia + tachypnea following recent UTI treatment. Recommend immediate clinical evaluation to rule out treatment failure or new source of infection.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recommended Action</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Clinical Workflow</div>
+          <div class="recommendation-text"><strong>Bedside assessment within 1 hour.</strong> Consider repeat UA, CBC with diff, blood cultures if febrile pattern persists. Notify provider on call.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Notify Provider</button>
+      <button class="panel-btn">View Full Chart</button>
+      <button class="panel-btn">Order Workup</button>
+    `
+  },
+
+  'credential': {
+    tagClass: 'info',
+    tagText: 'Info · Action Suggested',
+    title: 'RN credential expires in 30 days',
+    subtitle: 'M. Rivera, RN · License #RN492817',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Staff Member</div>
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Name</div>
+            <div class="info-item-value">Maria Rivera, RN</div>
+          </div>
+          <div>
+            <div class="info-item-label">Role</div>
+            <div class="info-item-value">Staff Nurse · Day Shift</div>
+          </div>
+          <div>
+            <div class="info-item-label">License</div>
+            <div class="info-item-value">#RN492817 (Ohio)</div>
+          </div>
+          <div>
+            <div class="info-item-label">Hire Date</div>
+            <div class="info-item-value">Aug 2023</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Credential Status</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Days Until Expiry</div>
+            <div class="stat-pill-value" style="color: var(--amber)">30</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Expires</div>
+            <div class="stat-pill-value">Jun 4</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Renewal Window</div>
+            <div class="stat-pill-value">Open</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Renewal Requirements</div>
+        <div class="data-row">
+          <span class="data-row-label">CE hours required</span>
+          <span class="data-row-value">24</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">CE hours on file</span>
+          <span class="data-row-value" style="color: var(--green)">24 ✓</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Background check status</span>
+          <span class="data-row-value" style="color: var(--green)">Current</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Renewal fee</span>
+          <span class="data-row-value">$135</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recommended Action</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">HR Workflow</div>
+          <div class="recommendation-text">Send renewal reminder to M. Rivera with link to Ohio Board of Nursing portal. Schedule follow-up check at 14-day mark. All requirements met — no clinical risk to facility.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Send Reminder</button>
+      <button class="panel-btn">View Staff Profile</button>
+    `
+  },
+
+  'offsite': {
+    tagClass: 'info',
+    tagText: 'Info · Audit Trail',
+    title: 'Offsite decision supported & logged',
+    subtitle: 'PT-04621 · Cardiac event · Dr. Hashi',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Decision Summary</div>
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Patient</div>
+            <div class="info-item-value">PT-04621</div>
+          </div>
+          <div>
+            <div class="info-item-label">Decision</div>
+            <div class="info-item-value">Send to ED</div>
+          </div>
+          <div>
+            <div class="info-item-label">Provider</div>
+            <div class="info-item-value">Dr. M. Hashi</div>
+          </div>
+          <div>
+            <div class="info-item-label">Decision Time</div>
+            <div class="info-item-value">12:42 EST</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">AI Recommendation Provided</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Send-Out Decision Support · 73% confidence</div>
+          <div class="recommendation-text">Recommendation: <strong>ED transfer</strong>. Vitals + EKG findings (ST elevation in inferior leads) + clinical presentation consistent with acute MI. Onsite stabilization not appropriate.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Clinical Reasoning Logged</div>
+        <div class="timeline-item">
+          <div class="timeline-time">12:38</div>
+          <div class="timeline-content">Patient reported crushing chest pain, radiating to L arm</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">12:40</div>
+          <div class="timeline-content">12-lead EKG: ST elevation V2-V5</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">12:41</div>
+          <div class="timeline-content">AI recommendation reviewed by Dr. Hashi — concur</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">12:42</div>
+          <div class="timeline-content"><strong>Decision logged.</strong> EMS dispatched. Hospital notified.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Defensibility Snapshot</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Audit Trail Complete</div>
+          <div class="recommendation-text">All inputs (vitals, history, EKG image, AI recommendation, clinician reasoning) captured to immutable log at 12:42:14. Available for clinical, legal, or county review on demand.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">View Full Audit Log</button>
+      <button class="panel-btn">Patient Outcome</button>
+    `
+  },
+
+  'staffing': {
+    tagClass: 'warn',
+    tagText: 'Forecast · Action by Wed',
+    title: 'Staffing gap predicted: Sat night',
+    subtitle: '2 RN positions short · 89% confidence',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Forecast Summary</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Date</div>
+            <div class="stat-pill-value">Sat 5/9</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Shift</div>
+            <div class="stat-pill-value">Night</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Gap</div>
+            <div class="stat-pill-value" style="color: var(--amber)">2 RN</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Confidence</div>
+            <div class="stat-pill-value">89%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Why Now</div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 1</div>
+          <div class="timeline-content"><strong>2 PTO requests</strong> approved for Sat 5/9 (J. Patel, T. Williams)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 2</div>
+          <div class="timeline-content"><strong>1 open requisition</strong> not yet filled (RN Night, posted 14 days)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 3</div>
+          <div class="timeline-content">Per diem availability that weekend: limited (3 of usual 8 available)</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Mitigation Options</div>
+        <div class="data-row">
+          <span class="data-row-label">Per diem outreach (3 available)</span>
+          <span class="data-row-value">In progress</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Overtime offer to night staff</span>
+          <span class="data-row-value">Not started</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Agency request</span>
+          <span class="data-row-value">Backup option</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recommended Action</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Decision needed by Wed 5/6</div>
+          <div class="recommendation-text">Send OT offer to night RNs <strong>today</strong> (24-hour response window). If under-filled by Wed AM, escalate to agency. Agency lead time = 48 hours, so Wed is the latest decision point to avoid contract withhold exposure.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Send OT Offer</button>
+      <button class="panel-btn">Contact Agency</button>
+      <button class="panel-btn">View Schedule</button>
+    `
+  },
+
+  // ============ HERO + KPI DETAIL PANELS ============
+
+  'hero-sla': {
+    tagClass: 'info',
+    tagText: 'KPI · Composite Metric',
+    title: 'Clinical SLA Compliance',
+    subtitle: '98.4% — composite of 6 measures · last 30 days',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">What This Measures</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">A composite score across all six clinical timeframes Armor is contractually obligated to meet at Lucas County. Weighted by clinical risk, with H&P and intake screening counting heaviest because their breaches carry the most liability exposure.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Component Breakdown</div>
+        <div class="data-row">
+          <span class="data-row-label">Intake Screening (≤4 hrs)</span>
+          <span class="data-row-value" style="color: var(--green)">99.7%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">14-Day H&P</span>
+          <span class="data-row-value" style="color: var(--green)">98.2%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Sick Call Response (≤24 hrs)</span>
+          <span class="data-row-value" style="color: var(--amber)">95.4%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Chronic Care Visit</span>
+          <span class="data-row-value" style="color: var(--green)">97.8%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">MH 14-Day Follow-Up</span>
+          <span class="data-row-value" style="color: var(--green)">99.0%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Medication Administration</span>
+          <span class="data-row-value" style="color: var(--green)">99.6%</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">90-Day Trend</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Today</div>
+            <div class="stat-pill-value">98.4%</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">30-Day Avg</div>
+            <div class="stat-pill-value">96.3%</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">90-Day Avg</div>
+            <div class="stat-pill-value">94.8%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Industry Context</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Benchmark</div>
+          <div class="recommendation-text">Industry average for correctional healthcare SLA compliance: <strong>87-91%</strong>. Lucas County is operating <strong>7-11 points above peer average</strong>, reflecting Armor's clinical operations discipline.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Open Compliance Detail</button>
+      <button class="panel-btn">Export to County</button>
+    `
+  },
+
+  'kpi-sendout': {
+    tagClass: 'info',
+    tagText: 'KPI · Cost Driver',
+    title: 'Hospital Send-Out Rate',
+    subtitle: '3.2% — 38% below industry benchmark',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">What This Measures</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">Percentage of patients sent off-site to the hospital for evaluation or admission, calculated monthly per 100 average daily population. Lower is better — and importantly, lower without compromising clinical safety.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Current Period</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Send-Out Rate</div>
+            <div class="stat-pill-value">3.2%</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Industry Avg</div>
+            <div class="stat-pill-value">5.2%</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Avoided</div>
+            <div class="stat-pill-value" style="color: var(--green)">53</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Disposition of Send-Outs (n=84)</div>
+        <div class="data-row">
+          <span class="data-row-label">Treated and discharged from ED</span>
+          <span class="data-row-value">66</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Admitted</span>
+          <span class="data-row-value">14</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Surgery</span>
+          <span class="data-row-value">3</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Behavioral / Psych</span>
+          <span class="data-row-value">1</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Financial Impact</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Cost Avoidance YTD</div>
+          <div class="recommendation-text">53 fewer send-outs than benchmark would have produced. Estimated avoided cost: <strong>$184,000</strong> in transport, deputy time, and ER charges. Run-rate: <strong>$441,000 annualized</strong>.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Top Drivers</div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 1</div>
+          <div class="timeline-content"><strong>Onsite chronic care intensification.</strong> Reduced reactive ER transports for diabetes and hypertension complications by ~40%.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 2</div>
+          <div class="timeline-content"><strong>AI-supported send-out decisions.</strong> 73% of borderline cases now stay onsite with documented clinical rationale and good outcomes.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 3</div>
+          <div class="timeline-content"><strong>Predictive deterioration alerts.</strong> Early intervention prevents acute escalation that would otherwise require transport.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">View All Send-Outs</button>
+      <button class="panel-btn">Export Report</button>
+    `
+  },
+
+  'kpi-staffing': {
+    tagClass: 'warn',
+    tagText: 'KPI · Action Needed',
+    title: 'Staffing Matrix Fill',
+    subtitle: '94.6% — 2 positions short on current shift',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Current Shift Status</div>
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Required (Matrix)</div>
+            <div class="info-item-value large">37</div>
+          </div>
+          <div>
+            <div class="info-item-label">Filled</div>
+            <div class="info-item-value large" style="color: var(--amber)">35</div>
+          </div>
+          <div>
+            <div class="info-item-label">Open Positions</div>
+            <div class="info-item-value large" style="color: var(--red)">2</div>
+          </div>
+          <div>
+            <div class="info-item-label">Withhold Risk</div>
+            <div class="info-item-value large">$1,820</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Open Positions This Shift</div>
+        <div class="data-row">
+          <span class="data-row-label">RN — Pod 4</span>
+          <span class="data-row-value" style="color: var(--red)">Open</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">LPN — Med Pass</span>
+          <span class="data-row-value" style="color: var(--red)">Open</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Forward Look (Next 7 Days)</div>
+        <div class="timeline-item">
+          <div class="timeline-time">Sat 5/9</div>
+          <div class="timeline-content"><strong>Night shift forecast: 2 RN short</strong> — already flagged in alerts. Action by Wed.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Mon 5/12</div>
+          <div class="timeline-content">Day shift fully covered. Per diem RN scheduled to backfill PTO.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Wed 5/14</div>
+          <div class="timeline-content">Night shift fully covered. New hire orientation begins this day.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Year-to-Date Fill Rate</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">YTD Avg</div>
+            <div class="stat-pill-value">96.2%</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Withhold Avoided</div>
+            <div class="stat-pill-value" style="color: var(--green)">$48K</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Industry Avg</div>
+            <div class="stat-pill-value">89%</div>
+          </div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Fill Open Positions</button>
+      <button class="panel-btn">View Schedule</button>
+      <button class="panel-btn">Withhold Detail</button>
+    `
+  },
+
+  'kpi-documentation': {
+    tagClass: 'info',
+    tagText: 'KPI · Liability Protection',
+    title: 'Documentation Integrity',
+    subtitle: '99.1% — zero falsification flags in last 30 days',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">What This Measures</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">A composite integrity score combining four signals: copy-paste detection across patients, contradictory entries within the same chart, timestamp anomalies (cross-referenced with badge access and shift assignments), and protocol adherence. The single most important metric for liability defense.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Signal Breakdown (last 30 days)</div>
+        <div class="data-row">
+          <span class="data-row-label">Copy-paste detection</span>
+          <span class="data-row-value" style="color: var(--green)">0 flags</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Contradictory entries</span>
+          <span class="data-row-value" style="color: var(--green)">0 flags</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Timestamp anomalies</span>
+          <span class="data-row-value" style="color: var(--green)">0 flags</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Protocol deviations</span>
+          <span class="data-row-value" style="color: var(--amber)">3 minor</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Volume Reviewed</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Notes Scanned</div>
+            <div class="stat-pill-value">14,847</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">By</div>
+            <div class="stat-pill-value">38 nurses</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Coverage</div>
+            <div class="stat-pill-value">100%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">90-Day History</div>
+        <div class="timeline-item">
+          <div class="timeline-time">Mar 12</div>
+          <div class="timeline-content">2 flags raised: copy-paste pattern in evening shift. Resolved with retraining (no findings of intent).</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Apr 03</div>
+          <div class="timeline-content">1 timestamp anomaly: nurse documented assessment 2 hours after shift end. Coaching conversation; resolved.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Apr 28</div>
+          <div class="timeline-content">Score reaches 99.1%. Sustained for 30+ days.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Defensibility Snapshot</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Audit-Ready</div>
+          <div class="recommendation-text">If a survey or lawsuit arose tomorrow, every patient's documentation would have a complete integrity score and audit trail. <strong>Zero falsification flags in 30 days</strong> means clean documentation across all 14,847 reviewed entries.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">View Full Audit</button>
+      <button class="panel-btn">Export for Survey</button>
+    `
+  },
+
+  // ============ INSIGHT DETAIL PANELS ============
+
+  'insight-cost': {
+    tagClass: 'info',
+    tagText: 'AI Insight · Cost Avoidance',
+    title: 'Send-out savings tracking 41% above benchmark this quarter',
+    subtitle: 'Generated 8 minutes ago · Model v4.2',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">The Insight</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">Onsite chronic care intensification has reduced ER transports by an estimated 22 events QTD vs. last year's pace. Projected county savings: <strong>$76,000 through end of quarter</strong>.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">How AI Reached This</div>
+        <div class="timeline-item">
+          <div class="timeline-time">Step 1</div>
+          <div class="timeline-content"><strong>Compared current QTD send-out volume</strong> against same quarter prior year. Found 22-event reduction.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Step 2</div>
+          <div class="timeline-content"><strong>Identified driver:</strong> chronic care visit volume up 18% QoQ. Cross-referenced with patients who would have been likely send-outs.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Step 3</div>
+          <div class="timeline-content"><strong>Estimated avoided cost</strong> using historical send-out cost averages ($3,450 per event including transport and deputy time).</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Step 4</div>
+          <div class="timeline-content"><strong>Projected forward:</strong> at current pace, full-quarter savings ~$76K, full-year run-rate $304K.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Confidence & Caveats</div>
+        <div class="data-row">
+          <span class="data-row-label">Model confidence</span>
+          <span class="data-row-value">82%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Causation strength</span>
+          <span class="data-row-value">Moderate (correlation observed)</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Cost basis</span>
+          <span class="data-row-value">12-mo rolling average</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recommended Next Steps</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Operational Action</div>
+          <div class="recommendation-text">Continue current chronic care intensification. Consider expanding to additional chronic conditions (CHF, COPD). Document the savings narrative for next county quarterly review.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">View Send-Out Detail</button>
+      <button class="panel-btn">Export for County</button>
+      <button class="panel-btn">Drill Into Patients</button>
+    `
+  },
+
+  'insight-medication': {
+    tagClass: 'warn',
+    tagText: 'AI Insight · Risk Forecast',
+    title: 'Three chronic patients trending toward acute deterioration',
+    subtitle: 'Generated 8 minutes ago · Model v4.2',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">The Insight</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">The model has identified a pattern of <strong>missed medication administrations combined with abnormal vitals</strong> across three chronic patients. Care plan adjustments recommended; clinical lead has been notified.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Patients Flagged</div>
+        <div class="timeline-item">
+          <div class="timeline-time">PT-03127</div>
+          <div class="timeline-content"><strong>F, 38, T2DM.</strong> 4 missed insulin admins in last 14 days + rising A1C trend. Currently in Sepsis-V2 alert.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">PT-04012</div>
+          <div class="timeline-content"><strong>M, 54, HTN + CHF.</strong> 3 missed lisinopril doses + BP creeping up (last reading 162/94).</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">PT-04203</div>
+          <div class="timeline-content"><strong>M, 41, HIV.</strong> Adherence dropped to 71% last 14 days. CD4 trend not yet clinically significant but worth watching.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">How AI Reached This</div>
+        <div class="timeline-item">
+          <div class="timeline-time">Signal 1</div>
+          <div class="timeline-content"><strong>MAR analysis:</strong> Cross-referenced medication administration records against ordered regimens for all chronic patients (n=412).</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Signal 2</div>
+          <div class="timeline-content"><strong>Vitals trend analysis:</strong> Identified patients with deviating vitals consistent with their chronic condition's deterioration pattern.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Signal 3</div>
+          <div class="timeline-content"><strong>Intersection:</strong> Three patients appear in both lists. The overlap is what makes this actionable rather than noise.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Confidence & Caveats</div>
+        <div class="data-row">
+          <span class="data-row-label">Model confidence</span>
+          <span class="data-row-value">87%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">False positive rate (90-day)</span>
+          <span class="data-row-value">8%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Acute event prevented (lifetime)</span>
+          <span class="data-row-value">~14 events</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recommended Action</div>
+        <div class="recommendation-box critical">
+          <div class="recommendation-label">Clinical Workflow</div>
+          <div class="recommendation-text"><strong>Care plan review for all three patients within 48 hours.</strong> Consider DOT (directly observed therapy) for PT-03127 and PT-04012 given missed med pattern. PT-04203 — counsel on adherence at next visit.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Open All 3 Charts</button>
+      <button class="panel-btn">Notify Provider</button>
+      <button class="panel-btn">Schedule Follow-Up</button>
+    `
+  },
+
+  'insight-staffing': {
+    tagClass: 'warn',
+    tagText: 'AI Insight · Forecast',
+    title: 'Saturday night shift fill risk requires action by Wednesday',
+    subtitle: 'Generated 8 minutes ago · Model v4.2 · 89% confidence',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">The Insight</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">Predicted <strong>2-RN shortfall</strong> on Saturday 5/9 night shift based on PTO + open requisitions + per diem availability. Per diem outreach is already initiated and a backup plan is ready, but a decision is needed by Wednesday to avoid agency premium pricing.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Why Saturday 5/9</div>
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Required (Matrix)</div>
+            <div class="info-item-value large">8 RN</div>
+          </div>
+          <div>
+            <div class="info-item-label">Currently Filled</div>
+            <div class="info-item-value large" style="color: var(--amber)">6 RN</div>
+          </div>
+          <div>
+            <div class="info-item-label">Shortfall</div>
+            <div class="info-item-value large" style="color: var(--red)">2 RN</div>
+          </div>
+          <div>
+            <div class="info-item-label">Withhold Risk</div>
+            <div class="info-item-value large">$3,640</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Drivers</div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 1</div>
+          <div class="timeline-content"><strong>2 PTO requests approved</strong> for Sat 5/9 (J. Patel, T. Williams)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 2</div>
+          <div class="timeline-content"><strong>1 open requisition</strong> not yet filled (RN Night, posted 14 days)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">Driver 3</div>
+          <div class="timeline-content">Per diem availability that weekend is limited — only 3 of usual 8 are available</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Mitigation Path</div>
+        <div class="data-row">
+          <span class="data-row-label">Per diem outreach (3 candidates)</span>
+          <span class="data-row-value" style="color: var(--green)">In progress</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">OT offer to current night staff</span>
+          <span class="data-row-value">Not started</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Agency request (last resort)</span>
+          <span class="data-row-value">Backup option</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Decision Timeline</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Action by Wed 5/6</div>
+          <div class="recommendation-text">Send OT offer to night RNs <strong>today</strong> (24-hour response window). If under-filled by Wed AM, escalate to agency. Agency lead time = 48 hours, so Wednesday is the latest decision point to avoid contract withhold exposure.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Send OT Offer</button>
+      <button class="panel-btn">Contact Agency</button>
+      <button class="panel-btn">View Schedule</button>
+    `
+  },
+
+  // ============ MENTAL HEALTH PANELS ============
+
+  'watch-urgent': {
+    tagClass: 'critical',
+    tagText: 'Critical · Watch Check Overdue',
+    title: 'Patient 04982 — Constant Watch · 3:14 OVERDUE',
+    subtitle: 'L1 (Constant Watch) · Active 18 hours · Armor responsibility',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Status</div>
+        <div class="recommendation-box critical">
+          <div class="recommendation-label">Action Required Now</div>
+          <div class="recommendation-text">This patient is on Level 1 (Constant Watch). The last documented check was 3 minutes 14 seconds ago — checks should be continuous. <strong>Notify charge nurse and on-shift MH staff immediately.</strong></div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Patient Summary</div>
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Patient</div>
+            <div class="info-item-value">PT-04982</div>
+          </div>
+          <div>
+            <div class="info-item-label">Demo</div>
+            <div class="info-item-value">M, 32 · MH Pod</div>
+          </div>
+          <div>
+            <div class="info-item-label">Watch Level</div>
+            <div class="info-item-value" style="color: var(--red)">L1 — Constant Watch</div>
+          </div>
+          <div>
+            <div class="info-item-label">Watch Started</div>
+            <div class="info-item-value">May 2 · 20:48</div>
+          </div>
+          <div>
+            <div class="info-item-label">Initiating Reason</div>
+            <div class="info-item-value">Active SI on intake</div>
+          </div>
+          <div>
+            <div class="info-item-label">Current MH Diagnosis</div>
+            <div class="info-item-value">MDD, severe</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recent Check Log</div>
+        <div class="timeline-item">
+          <div class="timeline-time">14:24</div>
+          <div class="timeline-content">Visual check, alert and oriented, no acute distress — <strong>K. Jones, RN</strong></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">14:09</div>
+          <div class="timeline-content">Visual check, calm — K. Jones, RN</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">13:54</div>
+          <div class="timeline-content">Visual check, eating lunch — K. Jones, RN</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">13:39</div>
+          <div class="timeline-content">Visual check, alert and oriented — K. Jones, RN</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Why This Alert Fired</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Engine Logic</div>
+          <div class="recommendation-text">Patient is on L1 Constant Watch. Last check timestamp: 14:24. Current time: 14:42. Constant Watch protocol requires continuous observation, with documented checks no more than 15 minutes apart. <strong>Current gap: 18 minutes (3:14 over the 15-min ceiling).</strong></div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">MH Director Notification</div>
+        <div class="data-row">
+          <span class="data-row-label">Notified at</span>
+          <span class="data-row-value">14:39 (auto)</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Acknowledged</span>
+          <span class="data-row-value" style="color: var(--amber)">Pending</span>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Mark Check Complete</button>
+      <button class="panel-btn">Contact Pod</button>
+      <button class="panel-btn danger">Escalate to MH Director</button>
+    `
+  },
+
+  'watch-warn': {
+    tagClass: 'warn',
+    tagText: 'Watch · Approaching Interval',
+    title: 'Patient 04891 — 15-Min Watch · Next check in 2:48',
+    subtitle: 'L2 (15-min) · Active 2.5 days · Armor responsibility',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Patient Summary</div>
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Patient</div>
+            <div class="info-item-value">PT-04891</div>
+          </div>
+          <div>
+            <div class="info-item-label">Demo</div>
+            <div class="info-item-value">F, 28 · MH Pod</div>
+          </div>
+          <div>
+            <div class="info-item-label">Watch Level</div>
+            <div class="info-item-value">L2 — 15-min</div>
+          </div>
+          <div>
+            <div class="info-item-label">Step-Down Eligible</div>
+            <div class="info-item-value">Tomorrow</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Watch Trajectory</div>
+        <div class="timeline-item">
+          <div class="timeline-time">May 2</div>
+          <div class="timeline-content">Placed on L1 (Constant Watch) — passive SI, no plan</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">May 3</div>
+          <div class="timeline-content">Stepped down to L2 (15-min) per MH director assessment</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">May 5 (today)</div>
+          <div class="timeline-content">Day 3 on L2. Step-down eligibility review tomorrow per protocol.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Today's Check Compliance</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Checks Required</div>
+            <div class="stat-pill-value">59</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Completed</div>
+            <div class="stat-pill-value">59</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Compliance</div>
+            <div class="stat-pill-value" style="color: var(--green)">100%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recent Check Log</div>
+        <div class="timeline-item">
+          <div class="timeline-time">14:30</div>
+          <div class="timeline-content">Visual check, calm, sitting on bunk — K. Jones, RN</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">14:15</div>
+          <div class="timeline-content">Visual check, alert and oriented — K. Jones, RN</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">14:00</div>
+          <div class="timeline-content">Visual check, no distress — K. Jones, RN</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">View Full Chart</button>
+      <button class="panel-btn">Step-Down Review</button>
+    `
+  },
+
+  'watch-ok': {
+    tagClass: 'info',
+    tagText: 'Watch · On Schedule',
+    title: 'Watch patient — On schedule',
+    subtitle: 'All checks compliant · No action required',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Status</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">This patient is on schedule for all required watch checks. Click any individual patient row from the watch panel to see their full chart, watch trajectory, and step-down eligibility.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">What This Panel Shows</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">In production</div>
+          <div class="recommendation-text">Each watch row in the dashboard opens a patient-specific detail panel showing: full watch trajectory (initial level, step-downs, current status), check compliance for the current shift and 24-hour window, recent check log with documenting staff member, MH assessment history, and step-down eligibility timing.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">View Full Chart</button>
+      <button class="panel-btn">Watch Log</button>
+    `
+  },
+
+  'mh-intake': {
+    tagClass: 'info',
+    tagText: 'MH Pillar · Intake Risk Screening',
+    title: 'Intake Risk Screening — 100% acted-on within 4 hrs',
+    subtitle: '12 of 12 high-risk flags this period',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">What This Measures</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">Every patient booked into the facility receives an intake screening within 4 hours that includes Columbia Suicide Severity Rating Scale items, MH history flags, and active substance use indicators. Any patient flagged as high-risk must have a clinical follow-up within 4 hours of intake. <strong>This is the #1 highest-impact MH workstream by liability.</strong></div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Last 30 Days</div>
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Intakes</div>
+            <div class="info-item-value large">847</div>
+          </div>
+          <div>
+            <div class="info-item-label">Screened in 4 hrs</div>
+            <div class="info-item-value large">847</div>
+          </div>
+          <div>
+            <div class="info-item-label">High-Risk Flags</div>
+            <div class="info-item-value large">12</div>
+          </div>
+          <div>
+            <div class="info-item-label">Followed up in 4 hrs</div>
+            <div class="info-item-value large" style="color: var(--green)">12</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">High-Risk Outcomes</div>
+        <div class="data-row">
+          <span class="data-row-label">Placed on Constant Watch</span>
+          <span class="data-row-value">3</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Placed on 15-min Watch</span>
+          <span class="data-row-value">7</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">MH consult only (no watch)</span>
+          <span class="data-row-value">2</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Adverse events 30 days post-intake</span>
+          <span class="data-row-value" style="color: var(--green)">0</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">AI Layer</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Risk Engine</div>
+          <div class="recommendation-text">Beyond the standardized intake screening, the AI layer reviews patient history (prior MH episodes, prior watch placements, medication history) and surfaces additional risk factors the screening might miss. In the last 30 days, the AI layer identified <strong>4 additional patients</strong> who scored as moderate on the screening but had risk patterns warranting MH consult. Two of those four were subsequently placed on watch.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">View All Intakes</button>
+      <button class="panel-btn">Risk Engine Detail</button>
+    `
+  },
+
+  'mh-14day': {
+    tagClass: 'info',
+    tagText: 'MH Pillar · SLA Tracking',
+    title: '14-Day MH Assessment — 99.0%',
+    subtitle: '198 of 200 patients · last 30 days',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">What This Measures</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">Every patient with an MH flag at intake or chronic MH diagnosis must receive a comprehensive MH assessment by an LCSW or psychiatrist within 14 days of booking. This is contractually required and a frequent survey finding when missed.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Period Performance</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">Required</div>
+            <div class="stat-pill-value">200</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Completed in 14 days</div>
+            <div class="stat-pill-value">198</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Compliance</div>
+            <div class="stat-pill-value" style="color: var(--green)">99.0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">The 2 Misses</div>
+        <div class="timeline-item">
+          <div class="timeline-time">PT-04612</div>
+          <div class="timeline-content">Released day 13 before assessment could be completed. <strong>Excused per protocol</strong> — counted as a miss but not a deficiency.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">PT-04701</div>
+          <div class="timeline-content">Patient refused assessment day 12 and day 13. Refusal documented per protocol. <strong>Counted as miss for SLA purposes</strong> but not actionable.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">90-Day Trend</div>
+        <div class="data-row">
+          <span class="data-row-label">90-day average</span>
+          <span class="data-row-value" style="color: var(--green)">98.4%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Industry benchmark</span>
+          <span class="data-row-value">~89%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Survey deficiencies last 12 mo</span>
+          <span class="data-row-value" style="color: var(--green)">0</span>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">View Pending Assessments</button>
+      <button class="panel-btn">Export for Survey</button>
+    `
+  },
+
+  'mh-checks': {
+    tagClass: 'warn',
+    tagText: 'MH Pillar · Watch Check Compliance',
+    title: 'Watch Check Compliance — 98.7%',
+    subtitle: '1 missed check today · 76 checks completed correctly',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">What This Measures</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">Every documented suicide watch check, against the required interval for that watch level. <strong>This is the single highest-liability metric in correctional MH.</strong> A missed check that ends in a death is the most expensive lawsuit in correctional healthcare.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Today So Far</div>
+        <div class="info-grid">
+          <div>
+            <div class="info-item-label">Checks Required</div>
+            <div class="info-item-value large">77</div>
+          </div>
+          <div>
+            <div class="info-item-label">Completed On Time</div>
+            <div class="info-item-value large">76</div>
+          </div>
+          <div>
+            <div class="info-item-label">Late / Missed</div>
+            <div class="info-item-value large" style="color: var(--amber)">1</div>
+          </div>
+          <div>
+            <div class="info-item-label">Compliance Rate</div>
+            <div class="info-item-value large">98.7%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Today's Miss</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">PT-04982 · 14:42</div>
+          <div class="recommendation-text">Constant Watch check went 3:14 over the 15-min ceiling. Auto-alert fired to MH director at 14:39. <strong>Currently the active urgent alert in the watch panel above.</strong> No adverse outcome — patient remains stable.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">30-Day View</div>
+        <div class="data-row">
+          <span class="data-row-label">Total checks (30 days)</span>
+          <span class="data-row-value">2,310</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Late or missed</span>
+          <span class="data-row-value" style="color: var(--amber)">14</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Compliance rate</span>
+          <span class="data-row-value">99.4%</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Adverse events 30 days</span>
+          <span class="data-row-value" style="color: var(--green)">0</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Audit Trail</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Defensibility</div>
+          <div class="recommendation-text">Every check, every miss, every escalation is logged immutably with timestamp and documenting staff member. If an adverse event occurred, we could produce a complete check history within seconds for legal counsel, the family, or the county. <strong>This is the most defensible MH watch program in correctional healthcare.</strong></div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">View All Misses</button>
+      <button class="panel-btn">Audit Export</button>
+    `
+  },
+
+  'mh-staffing': {
+    tagClass: 'warn',
+    tagText: 'MH Pillar · Staffing',
+    title: 'MH Staffing Hours — 87% of contract',
+    subtitle: 'LCSW: 92% · Psych: 81%',
+    body: `
+      <div class="panel-section">
+        <div class="panel-section-label">Where We Are</div>
+        <div class="recommendation-box">
+          <div class="recommendation-text">MH staffing is the single hardest position class to fill in correctional healthcare. St. John's is operating at 87% of contracted MH hours — better than the industry average but with a meaningful gap on psychiatry coverage specifically.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Position Breakdown</div>
+        <div class="data-row">
+          <span class="data-row-label">LCSW (contract: 80 hrs/wk)</span>
+          <span class="data-row-value" style="color: var(--green)">92% (74 hrs)</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">Psychiatrist (contract: 16 hrs/wk)</span>
+          <span class="data-row-value" style="color: var(--amber)">81% (13 hrs)</span>
+        </div>
+        <div class="data-row">
+          <span class="data-row-label">MH Tech (contract: 60 hrs/wk)</span>
+          <span class="data-row-value" style="color: var(--green)">95% (57 hrs)</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Withhold Exposure</div>
+        <div class="stat-pills">
+          <div class="stat-pill">
+            <div class="stat-pill-label">This Month</div>
+            <div class="stat-pill-value">$2,140</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">YTD</div>
+            <div class="stat-pill-value">$8,860</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-pill-label">Run Rate</div>
+            <div class="stat-pill-value">$26.6K</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-label">Recommended Action</div>
+        <div class="recommendation-box">
+          <div class="recommendation-label">Mitigation</div>
+          <div class="recommendation-text">Psychiatrist gap is the priority. Telepsych extension could close the 3-hour weekly gap at lower cost than recruiting an additional in-person psychiatrist. Estimated annual savings vs. current withhold trajectory: <strong>$24K</strong>.</div>
+        </div>
+      </div>
+    `,
+    footer: `
+      <button class="panel-btn primary">Telepsych Plan</button>
+      <button class="panel-btn">View Schedule</button>
+    `
+  }
+};
+
+function openPanel(alertId) {
+  const data = ALERT_DETAILS[alertId];
+  if (!data) return;
+
+  const panel = document.getElementById('detailPanel');
+  const overlay = document.getElementById('panelOverlay');
+  const tag = document.getElementById('panelTag');
+  const title = document.getElementById('panelTitle');
+  const subtitle = document.getElementById('panelSubtitle');
+  const body = document.getElementById('panelBody');
+  const footer = document.getElementById('panelFooter');
+
+  tag.className = 'panel-header-tag ' + data.tagClass;
+  tag.textContent = data.tagText;
+  title.textContent = data.title;
+  subtitle.textContent = data.subtitle;
+  body.innerHTML = data.body;
+  footer.innerHTML = data.footer;
+
+  panel.classList.add('open');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePanel() {
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('panelOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// MH watch toggle — swaps between Armor responsibility and custody (sheriff) mode
+function toggleMHMode() {
+  const toggle = document.getElementById('mhToggle');
+  const grid = document.getElementById('mhGrid');
+  if (!toggle || !grid) return;
+  toggle.classList.toggle('off');
+  grid.classList.toggle('custody-mode');
+}
+
+// Wire up all clickable cards (alerts, hero, insights)
+document.querySelectorAll('[data-alert]').forEach(card => {
+  card.addEventListener('click', (e) => {
+    // Don't trigger if clicking on an inner action button
+    if (e.target.closest('.alert-action')) return;
+    const alertId = card.getAttribute('data-alert');
+    if (alertId) openPanel(alertId);
+  });
+});
+
+// ESC to close
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closePanel();
+});
+</script>
+
+</body>
+</html>
