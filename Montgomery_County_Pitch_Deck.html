@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Armor Health — Montgomery County, OH</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--red:#C8102E;--ink:#111827;--charcoal:#1F2937;--lgray:#F3F4F6;--gray:#6B7280;--line:#E5E7EB;--green:#0F7B4F;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Geist',-apple-system,'Segoe UI',sans-serif;background:#2B3440;color:var(--ink);}
+  .topnav{position:fixed;top:0;left:0;right:0;height:44px;background:#0B111C;display:flex;align-items:center;
+    justify-content:center;gap:16px;z-index:99;color:#9CA3AF;font-size:12px;letter-spacing:.14em;text-transform:uppercase;}
+  .topnav button{background:none;border:1px solid #374151;color:#E5E7EB;padding:3px 12px;cursor:pointer;font-family:inherit;font-size:12px;}
+  .deck{padding-top:44px;display:flex;flex-direction:column;align-items:center;gap:24px;padding-bottom:50px;}
+  .slide{width:1600px;height:900px;background:#fff;position:relative;overflow:hidden;display:none;box-shadow:0 16px 50px rgba(0,0,0,.4);}
+  .slide.active{display:block;}
+
+  .anim{opacity:0;transform:translateY(16px);}
+  .slide.active .anim.anim-in{opacity:1;transform:none;transition:opacity .5s cubic-bezier(.2,.7,.3,1),transform .5s cubic-bezier(.2,.7,.3,1);}
+  @media (prefers-reduced-motion:reduce){.anim{opacity:1;transform:none;}}
+
+  /* dark slides */
+  .dark{background:radial-gradient(1200px 700px at 12% 10%,#1E2C42 0%,#111827 45%,#0A0F1A 100%);color:#fff;}
+  .dark .pad{padding:0 80px;height:100%;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2;}
+  .glow{position:absolute;width:900px;height:900px;right:-260px;top:-220px;border-radius:50%;
+    background:radial-gradient(circle,rgba(200,16,46,.22) 0%,rgba(200,16,46,0) 62%);pointer-events:none;}
+  .logo{display:inline-flex;align-items:center;gap:14px;margin-bottom:56px;}
+  .logo .mark{width:52px;height:52px;background:var(--red);display:grid;place-items:center;font-weight:900;font-size:26px;color:#fff;}
+  .logo .wm{font-size:22px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;}
+  .logo .wm span{color:#F2606F;}
+  .barleft{border-left:5px solid var(--red);padding-left:32px;}
+  .kicker{font-size:14px;letter-spacing:.26em;text-transform:uppercase;color:#F2606F;font-weight:700;margin-bottom:20px;}
+  .dark h1{font-size:70px;line-height:1.04;font-weight:800;letter-spacing:-.03em;max-width:1100px;}
+  .dark h1 em{font-style:normal;color:#F2606F;}
+  .facility{font-size:22px;color:#E2E8F0;font-weight:700;margin-top:20px;}
+  .subline{font-size:20px;color:#94A3B8;margin-top:16px;max-width:860px;line-height:1.5;font-weight:300;}
+  .darkfoot{position:absolute;left:80px;right:80px;bottom:76px;display:flex;justify-content:space-between;
+    font-size:13px;color:#64748B;letter-spacing:.2em;text-transform:uppercase;}
+
+  /* light slides */
+  .light .pad{padding:56px 72px 84px;height:100%;display:flex;flex-direction:column;}
+  .eyebrow{font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:8px;}
+  h2{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1.05;position:relative;padding-left:24px;}
+  h2::before{content:'';position:absolute;left:0;top:2px;bottom:2px;width:6px;background:var(--red);}
+  h2 .thin{font-weight:300;color:var(--gray);}
+  .intro{font-size:18px;color:var(--gray);line-height:1.5;margin-top:16px;max-width:1300px;font-weight:300;}
+  .redbar{position:absolute;bottom:0;left:0;right:0;height:34px;background:var(--red);display:flex;align-items:center;
+    justify-content:center;color:#fff;font-size:12px;letter-spacing:.28em;text-transform:uppercase;font-weight:700;}
+  .redbar .pg{position:absolute;right:24px;color:rgba(255,255,255,.75);letter-spacing:.1em;font-weight:500;}
+
+  .row{display:grid;gap:22px;flex:1;align-content:center;}
+  .r2{grid-template-columns:1fr 1fr;}
+  .r3{grid-template-columns:repeat(3,1fr);}
+  .r4{grid-template-columns:repeat(4,1fr);}
+
+  /* corporate team cards */
+  .pcard{border-top:3px solid var(--red);padding:18px 20px 20px;background:#fff;box-shadow:0 0 0 1px var(--line) inset;}
+  .pcard .fn{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);font-weight:800;}
+  .pcard .nm{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:12px;line-height:1.1;}
+  .pcard .ti{font-size:15px;font-weight:700;color:var(--ink);margin-top:8px;}
+  .pcard .ds{font-size:14.5px;color:var(--gray);line-height:1.45;margin-top:12px;font-weight:300;}
+
+  /* stat tiles */
+  .split{display:grid;grid-template-columns:1fr 1.15fr;gap:60px;align-items:center;}
+  .split .claim{font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.02em;}
+  .split .body{font-size:18px;color:var(--gray);line-height:1.55;margin-top:20px;font-weight:300;}
+  .split .tagline{font-size:19px;color:var(--red);font-weight:700;font-style:italic;margin-top:22px;}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .tile{background:var(--lgray);border-left:5px solid var(--red);padding:22px 24px;}
+  .tile .n{font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1;}
+  .tile .l{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-top:10px;line-height:1.35;}
+
+  /* chips + stats */
+  .chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px;flex:0 0 auto;}
+  .chip{border:1.5px solid var(--ink);padding:11px 22px;font-size:16px;font-weight:600;}
+  .chip.red{background:var(--red);border-color:var(--red);color:#fff;}
+  .chip.ghost{border-color:var(--line);color:var(--gray);font-weight:400;}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;}
+  .stat{border-top:2px solid var(--ink);padding-top:24px;}
+  .stat .n{font-size:120px;font-weight:800;letter-spacing:-.055em;line-height:.9;color:var(--red);}
+  .stat .n small{font-size:54px;font-weight:700;}
+  .stat .l{font-size:20px;margin-top:18px;line-height:1.35;font-weight:500;max-width:340px;}
+
+  /* feature blocks */
+  .feat{border-top:3px solid var(--red);padding-top:20px;}
+  .feat svg{width:36px;height:36px;stroke:var(--red);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+  .feat .t{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-top:16px;line-height:1.15;}
+  .feat .tag{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);font-weight:700;margin-top:9px;}
+  .feat .p{font-size:16.5px;color:var(--gray);line-height:1.45;margin-top:11px;font-weight:300;}
+
+  /* mental health cards */
+  .mh{border-top:3px solid var(--red);background:#fff;box-shadow:0 0 0 1px var(--line) inset;padding:30px 26px 28px;
+    text-align:center;position:relative;overflow:hidden;}
+  .mh::before{content:'';position:absolute;top:0;left:0;border-top:44px solid #FBE3E7;border-right:44px solid transparent;}
+  .mh .ic{width:62px;height:62px;background:var(--ink);display:grid;place-items:center;margin:0 auto;}
+  .mh .ic svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+  .mh .t{font-size:27px;font-weight:800;letter-spacing:-.02em;margin-top:18px;}
+  .mh .kw{font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);font-weight:700;margin-top:12px;}
+  .mh .q{font-size:16.5px;color:var(--gray);font-style:italic;margin-top:14px;line-height:1.45;}
+  .stripe{display:grid;grid-template-columns:1.5fr repeat(3,.75fr);background:var(--ink);color:#fff;
+    border-left:6px solid var(--red);margin-top:20px;}
+  .stripe > div{padding:18px 24px;border-left:1px solid rgba(255,255,255,.1);}
+  .stripe > div:first-child{border-left:none;font-size:16px;color:#CBD5E1;display:flex;align-items:center;}
+  .stripe b{color:var(--red);text-transform:uppercase;letter-spacing:.1em;font-size:14px;font-weight:800;margin-right:8px;}
+  .stripe .sn{font-size:26px;font-weight:800;text-align:center;}
+  .stripe .sl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#94A3B8;text-align:center;margin-top:5px;}
+
+  /* toggle */
+  .toggle{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0 4px;}
+  .toggle button{font-family:inherit;font-size:16px;font-weight:600;padding:15px 0;border:1px solid var(--line);
+    background:#fff;color:var(--gray);cursor:pointer;transition:all .18s;}
+  .toggle button.on{background:var(--red);border-color:var(--red);color:#fff;font-weight:700;}
+  .phase{display:none;}
+  .phase.on{display:grid;}
+
+  /* phase cards */
+  .ph{border-top:4px solid var(--red);box-shadow:0 0 0 1px var(--line) inset;padding:22px 22px 24px;}
+  .ph .n{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);font-weight:800;}
+  .ph .t{font-size:30px;font-weight:800;letter-spacing:-.025em;margin-top:8px;}
+  .ph .d{font-size:14px;color:var(--gray);margin-top:8px;font-weight:500;}
+  .ph ul{list-style:none;margin-top:16px;}
+  .ph li{font-size:15.5px;color:#374151;line-height:1.35;margin-bottom:11px;padding-left:16px;position:relative;}
+  .ph li::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;background:var(--red);}
+  .commit{background:var(--ink);color:#E5E7EB;border-left:6px solid var(--red);padding:18px 26px;font-size:17px;margin-top:18px;}
+  .commit b{color:var(--red);text-transform:uppercase;letter-spacing:.1em;font-size:14px;font-weight:800;margin-right:10px;}
+
+  /* workstreams */
+  .ws{box-shadow:0 0 0 1px var(--line) inset;border-top:3px solid var(--red);padding:11px 15px 12px;}
+  .ws .hd{display:flex;align-items:center;gap:10px;}
+  .ws .badge{width:23px;height:23px;background:var(--red);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800;}
+  .ws .nm{font-size:16.5px;font-weight:700;letter-spacing:-.01em;}
+  .ws ul{list-style:none;margin-top:8px;}
+  .ws li{font-size:12.5px;color:var(--gray);line-height:1.28;margin-bottom:4px;padding-left:14px;position:relative;font-weight:300;}
+  .ws li::before{content:'›';position:absolute;left:0;top:-1px;color:var(--red);font-weight:700;}
+
+  /* gantt */
+  .gantt{box-shadow:0 0 0 1px var(--line) inset;padding:22px 26px 26px;}
+  .gcols{display:grid;grid-template-columns:200px 1fr;align-items:center;}
+  .gcolhdr{display:grid;grid-template-columns:repeat(4,1fr);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gray);font-weight:600;text-align:center;padding-bottom:10px;}
+  .grow{display:grid;grid-template-columns:200px 1fr;align-items:center;margin-bottom:9px;}
+  .grow .lb{font-size:14.5px;font-weight:600;color:#374151;}
+  .track{position:relative;height:15px;background:#F8F8F9;}
+  .bar{position:absolute;top:0;height:15px;background:var(--red);}
+  .bar.soft{background:#F6C9D1;}
+  .golive{background:var(--ink);}
+  .gstats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:18px;}
+  .gs{background:var(--ink);color:#fff;border-left:5px solid var(--red);padding:16px 22px;}
+  .gs .n{font-size:26px;font-weight:800;}
+  .gs .l{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#94A3B8;margin-top:5px;}
+
+  /* columns */
+  .col{border-top:3px solid var(--line);padding-top:22px;}
+  .col.hot{border-top-color:var(--red);}
+  .col h3{font-size:26px;font-weight:700;letter-spacing:-.02em;}
+  .col .sub{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);font-weight:700;margin-top:8px;}
+  .col ul{list-style:none;margin-top:18px;}
+  .col li{font-size:17px;color:#374151;line-height:1.35;margin-bottom:13px;padding-left:20px;position:relative;}
+  .col li::before{content:'';position:absolute;left:0;top:10px;width:9px;height:2px;background:var(--red);}
+  .col.mute li::before{background:#9CA3AF;}
+
+  /* big bullets */
+  .bigbul{list-style:none;}
+  .bigbul li{font-size:21px;line-height:1.5;color:#374151;margin-bottom:30px;padding-left:30px;position:relative;font-weight:300;}
+  .bigbul li::before{content:'';position:absolute;left:0;top:11px;width:11px;height:11px;border-radius:50%;background:var(--red);}
+  .bigbul li b{font-weight:700;color:var(--ink);}
+  .bottomline{background:var(--ink);border-left:6px solid var(--red);padding:20px 26px;color:#E5E7EB;font-size:18px;}
+  .bottomline b{color:var(--red);letter-spacing:.1em;text-transform:uppercase;font-size:14px;font-weight:800;margin-right:10px;}
+
+  /* KPI */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .kpi{background:var(--lgray);padding:22px;border-left:5px solid var(--red);}
+  .kpi .n{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1;}
+  .kpi .n small{font-size:20px;}
+  .kpi .l{font-size:15.5px;color:#374151;margin-top:11px;line-height:1.3;font-weight:500;}
+
+  /* matrix */
+  table{width:100%;border-collapse:collapse;margin-top:14px;}
+  th{background:var(--ink);color:#fff;text-align:left;padding:7px 9px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;}
+  td{padding:2.5px 9px;font-size:12.5px;border-bottom:1px solid var(--line);color:#374151;line-height:1.25;}
+  tr:nth-child(even) td{background:#FAFAFB;}
+  td.k{font-weight:600;color:var(--ink);}
+  .num{text-align:center;}
+  tr.shifthdr td{background:var(--charcoal);color:#fff;font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:4px 9px;}
+  tr.tot td{background:#FDE7EB;font-weight:700;color:var(--ink);}
+  .fill{background:#FEF3C7;border-bottom:1px dashed var(--red);padding:0 4px;font-style:italic;}
+  .demo-pills{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;}
+  .demo-pills span{border:1px solid rgba(255,255,255,.22);color:#CBD5E1;padding:12px 24px;font-size:15px;}
+  .demo-pills span.hero{background:var(--red);border-color:var(--red);color:#fff;font-weight:700;
+    box-shadow:0 0 0 6px rgba(200,16,46,.18);}
+  .pulse{width:60px;height:60px;border:2px solid var(--red);border-radius:50%;display:grid;place-items:center;
+    margin-top:40px;animation:pulse 2s ease-in-out infinite;color:var(--red);font-size:24px;}
+  @keyframes pulse{0%,100%{transform:translateY(0);opacity:1;}50%{transform:translateY(10px);opacity:.55;}}
+  @media print{.topnav{display:none;}.deck{padding-top:0;gap:0;}.slide{box-shadow:none;page-break-after:always;}}
+</style>
+</head>
+<body>
+<div class="topnav"><button onclick="show(cur-1)">◀</button><span id="counter"></span><button onclick="show(cur+1)">▶</button></div>
+<div class="deck">
+
+<!-- 01 INTRO -->
+<section class="slide dark active">
+  <div class="glow"></div>
+  <div class="pad">
+    <div class="logo anim"><span class="mark">A</span><span class="wm">Armor <span>Health</span></span></div>
+    <div class="barleft">
+      <div class="kicker anim">Oral Presentation · PP-2026-0026</div>
+      <h1 class="anim">Montgomery County, OH<br>Correctional Medical &amp;<br>Behavioral Healthcare</h1>
+      <div class="facility anim">Montgomery County Jail · Dayton, Ohio</div>
+      <div class="subline anim">A partnership built on clinical discipline, accreditation you already earned, and a care model for the unit you are building.</div>
+    </div>
+  </div>
+  <div class="darkfoot anim"><span>Presented by Armor Health</span><span>September 2, 2026</span></div>
+</section>
+
+<!-- 02 WHO IS ARMOR -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">Introduction</div>
+    <h2 class="anim">Who is Armor Health?</h2>
+    <div class="row">
+      <div class="split">
+        <div>
+          <div class="claim anim">We are a national leader in correctional healthcare with two decades of experience managing complex patient populations behind the walls.</div>
+          <div class="body anim">Headquartered in Miami with a nationwide footprint, Armor Health has built its reputation on clinical discipline, data-driven care, and operational accountability. We treat every facility we serve as a partnership — not a contract.</div>
+          <div class="tagline anim">Raising the Standard of Care.</div>
+        </div>
+        <div class="tiles">
+          <div class="tile anim"><div class="n">2004</div><div class="l">Founded</div></div>
+          <div class="tile anim"><div class="n">2M+</div><div class="l">Patients managed since inception</div></div>
+          <div class="tile anim"><div class="n">100+</div><div class="l">Facilities serviced nationally</div></div>
+          <div class="tile anim"><div class="n">1,500+</div><div class="l">Employees across the country</div></div>
+          <div class="tile anim"><div class="n">200+</div><div class="l">Years combined healthcare leadership</div></div>
+          <div class="tile anim"><div class="n">100+</div><div class="l">Years correctional healthcare experience</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">02</span></div>
+</section>
+
+<!-- 03 OHIO -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">Regional footprint</div>
+    <h2 class="anim">Ohio is not new to us</h2>
+    <div class="chips">
+      <span class="chip anim">Franklin County · ADP 1,850</span>
+      <span class="chip anim">CCNO · ADP 576</span>
+      <span class="chip anim">Stark County</span>
+      <span class="chip anim">Stark RCCC</span>
+      <span class="chip anim">Lucas County</span>
+      <span class="chip red anim">Largest non-DOC provider in Ohio</span>
+    </div>
+    <div class="row">
+      <div class="stats">
+        <div class="stat anim"><div class="n">42<small>%</small></div><div class="l">Fewer ER visits where Armor runs MAT</div></div>
+        <div class="stat anim"><div class="n">58<small>%</small></div><div class="l">Fewer hospital admissions</div></div>
+        <div class="stat anim"><div class="n">70<small>%</small></div><div class="l">Of specialty consults resolved on site, no transport</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">03</span></div>
+</section>
+
+<!-- 04 CORPORATE SUPPORT TEAM -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">The people behind your facility</div>
+    <h2 class="anim">Corporate Support Team</h2>
+    <p class="intro anim">Montgomery County gets dedicated, named leadership across every corporate function — clinical, operational, HR, technology, and finance. This is the team that owns your transition and stands behind the site every day after go-live.</p>
+    <div class="row r4" style="align-content:start;margin-top:26px;">
+      <div class="pcard anim"><div class="fn">Executive Sponsor</div><div class="nm">Tamara Taylor</div><div class="ti">Regional Vice President</div><div class="ds">Corporately accountable for contract operations and the primary liaison to MCSO. Leads the transition end to end. On site at least two full days per visit, with authority to add time whenever the site needs it.</div></div>
+      <div class="pcard anim"><div class="fn">Operations</div><div class="nm">Cory McConnel</div><div class="ti">Regional Manager</div><div class="ds">Day-to-day operational lead. Owns on-site execution, staffing stability, facility reporting, and the first line of escalation for Montgomery County leadership.</div></div>
+      <div class="pcard anim"><div class="fn">Clinical Physician</div><div class="nm">Jimmy Fernandez, MD</div><div class="ti">Chief Medical Officer</div><div class="ds">Oversight, training, and development of physicians and practitioners. Leads provider orientation, reviews site-specific clinical policy, and provides backup for the on-site Medical Director.</div></div>
+      <div class="pcard anim"><div class="fn">Behavioral Health</div><div class="nm">Dr. Syretta James</div><div class="ti">Chief Behavioral Health Officer</div><div class="ds">Executive owner of behavioral health strategy and delivery. Oversees BH intake, psychotropic medication continuity, crisis response, and community provider coordination.</div></div>
+    </div>
+    <div class="row r4" style="align-content:start;margin-top:18px;">
+      <div class="pcard anim"><div class="fn">Clinical Technology</div><div class="nm">Tyler Oswald, RN, CCHP</div><div class="ti">Director of Clinical Technologies</div><div class="ds">EHR implementation and optimization, dashboard configuration, and data security. Makes sure the reporting the County sees comes out of the system of record.</div></div>
+      <div class="pcard anim"><div class="fn">Human Resources</div><div class="nm">Jennifer Diaz, SHRM, MBA</div><div class="ti">Talent Acquisition Manager</div><div class="ds">Staff transition, recruitment, credentialing, and new employee orientation. Owns the Montgomery County workforce strategy end to end.</div></div>
+      <div class="pcard anim"><div class="fn">Continuous Quality Improvement</div><div class="nm">Jillian Lorenz</div><div class="ti">CQI</div><div class="ds">Quality program lead. Owns CQI committee cadence, audit readiness, compliance monitoring, and the continuous improvement loop after go-live.</div></div>
+      <div class="pcard anim"><div class="fn">On Site, Named at Award</div><div class="nm">Your Site Leadership</div><div class="ti">HSA · DON · Medical Director</div><div class="ds">Health Services Administrator, Director of Nursing, Medical Director, Mental Health Director, Psychiatrist, and Psychiatric NP — introduced to MCSO before day one.</div></div>
+    </div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">04</span></div>
+</section>
+
+<!-- 05 ACCREDITATION -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">Accreditation</div>
+    <h2 class="anim">Never failed a survey. <span class="thin">Never lost an accreditation.</span></h2>
+    <div class="row">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr) auto;gap:24px;">
+        <div class="ph anim" style="border-top-color:var(--green);background:#F2F9F5;"><div class="n" style="color:var(--green);">You already hold it</div><div class="t">Mental Health Services</div><div class="d">Earned by MCSO before this contract</div><ul><li>Our first job is protecting it</li><li>ACA maintained alongside it</li></ul></div>
+        <div class="ph anim"><div class="n">Year 1</div><div class="t">Health Services</div><div class="d">Second NCCHC program</div><ul><li>Gap audit inside 30 days</li><li>Standard owners named on site</li><li>Mock survey before the window</li></ul></div>
+        <div class="ph anim"><div class="n">Year 2</div><div class="t">Opioid Treatment</div><div class="d">Third NCCHC program</div><ul><li>MAT built to OTP-eligible design</li><li>SAMHSA path with ADAMHS partners</li></ul></div>
+        <div class="anim" style="background:var(--ink);color:#fff;padding:26px 30px;min-width:270px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#F2606F;font-weight:800;">Then</div>
+          <div style="font-size:40px;font-weight:800;letter-spacing:-.03em;margin-top:10px;">Pinnacle</div>
+          <div style="font-size:15px;color:#9CA3AF;margin-top:12px;line-height:1.4;">Three accreditations at once. A very short national list.</div>
+        </div>
+      </div>
+    </div>
+    <div class="commit anim"><b>Our commitment:</b> Armor pays for every fee, survey preparation, and consultant — and accepts the $250,000 accreditation penalty exactly as written.</div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">05</span></div>
+</section>
+
+<!-- 06 NEW TREATMENT SPACE -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">New treatment space</div>
+    <h2 class="anim">Four missions in one wing</h2>
+    <div class="row r4">
+      <div class="feat anim"><svg viewBox="0 0 24 24"><path d="M12 3v6M9 6h6"/><rect x="5" y="9" width="14" height="12" rx="2"/><path d="M9 15h6"/></svg><div class="t">Detox</div><div class="tag">Withdrawal management</div><div class="p">COWS and CIWA monitoring on protocol, audited every shift.</div></div>
+      <div class="feat anim"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.4-7 10-7 10z"/></svg><div class="t">Suicide Prevention</div><div class="tag">Same-shift assessment</div><div class="p">Every positive screen assessed before the shift ends.</div></div>
+      <div class="feat anim"><svg viewBox="0 0 24 24"><path d="M3 12h4l2 5 4-12 2 7h6"/></svg><div class="t">Medical Care</div><div class="tag">RN present 24/7</div><div class="p">Infirmary-level care held inside instead of transported out.</div></div>
+      <div class="feat anim"><svg viewBox="0 0 24 24"><path d="M4 20v-1a5 5 0 015-5h2"/><circle cx="10" cy="8" r="3.4"/><path d="M16 15h5M18.5 12.5v5"/></svg><div class="t">Intake</div><div class="tag">Booking RN every shift</div><div class="p">Screening before housing placement. No exceptions.</div></div>
+    </div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">06</span></div>
+</section>
+
+<!-- 07 UNITS -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">The units</div>
+    <h2 class="anim">Three care models, <span class="thin">one roof</span></h2>
+    <div class="row r3">
+      <div class="col mute anim"><h3>General Population</h3><div class="sub" style="color:#9CA3AF;">Access-based</div><ul><li>Sick call and chronic care clinics</li><li>ARNP / PA, 64 hours weekly</li><li>Encounter documentation</li></ul></div>
+      <div class="col hot anim"><h3>Behavioral Health</h3><div class="sub">Treatment-based</div><ul><li>Therapy, psychiatry, stabilization</li><li>Written criteria for every placement</li><li>Treatment plans with review dates</li></ul></div>
+      <div class="col hot anim"><h3>Medical Step-Down</h3><div class="sub">Acuity-based</div><ul><li><strong>RN physically present 24/7</strong></li><li>Physician on call around the clock</li><li>Provider-signed criteria in and out</li></ul></div>
+    </div>
+    <div class="chips"><span class="chip red anim">Different criteria. Different staffing. Different documentation.</span></div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">07</span></div>
+</section>
+
+<!-- 08 MENTAL HEALTH SERVICES -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">Behavioral health</div>
+    <h2 class="anim">Mental Health Services</h2>
+    <p class="intro anim">A dedicated behavioral health team integrated with the medical clinic — built around early identification, active monitoring, and continuity into the community on release.</p>
+    <div class="row r2" style="margin-top:20px;">
+      <div class="mh anim">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="t">Suicide Prevention</div><div class="kw">Screen · Monitor · Respond</div>
+        <div class="q">"Every patient screened. Every event reviewed. Every gap closed."</div>
+      </div>
+      <div class="mh anim">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="M9 13l2 2 4-4"/></svg></div>
+        <div class="t">Mental Health Assessments</div><div class="kw">Standardized · Documented · Repeatable</div>
+        <div class="q">"From intake screen to comprehensive evaluation in 14 days or less."</div>
+      </div>
+      <div class="mh anim">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M9.5 9.5l5 5"/></svg></div>
+        <div class="t">Medication Monitoring</div><div class="kw">Continuity · Compliance · Safety</div>
+        <div class="q">"No psychotropic prescription falls through the cracks — at intake, in care, or at release."</div>
+      </div>
+      <div class="mh anim">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="12" height="10" rx="2"/><path d="M15 11l6-3v8l-6-3z"/></svg></div>
+        <div class="t">Telepsychiatry</div><div class="kw">Access · Speed · Coverage</div>
+        <div class="q">"Board-certified psychiatry on demand — no transports, no delays."</div>
+      </div>
+    </div>
+    <div class="stripe anim">
+      <div><span><b>Integrated from day 1.</b> Every patient — every booking — every shift.</span></div>
+      <div><div class="sn">100%</div><div class="sl">Patients screened</div></div>
+      <div><div class="sn">14 days</div><div class="sl">To full evaluation</div></div>
+      <div><div class="sn">24/7</div><div class="sl">On-call BH coverage</div></div>
+    </div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">08</span></div>
+</section>
+
+<!-- 09 PHASED APPROACH -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">Transition plan</div>
+    <h2 class="anim">A Proven, Phased Approach</h2>
+    <p class="intro anim">Your RFP requires full implementation within 30 days of contract execution. That is our default plan — and the same playbook scales if the County wants a longer runway.</p>
+    <div class="toggle anim">
+      <button class="on" onclick="setPhase(0,this)">30 Days — Required</button>
+      <button onclick="setPhase(1,this)">60 Days</button>
+      <button onclick="setPhase(2,this)">90 Days</button>
+    </div>
+    <div class="row r4 phase on" id="ph0"></div>
+    <div class="row r4 phase" id="ph1"></div>
+    <div class="row r4 phase" id="ph2"></div>
+    <div class="commit anim"><b>Our commitment:</b> Zero disruption to patient care on Day 1. No lapses in medications, off-site appointments, or chronic care.</div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">09</span></div>
+</section>
+
+<!-- 10 WORKSTREAMS -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">Transition plan — detailed</div>
+    <h2 class="anim">Workstreams &amp; Functional Owners</h2>
+    <p class="intro anim" style="margin-top:10px;">140+ tasks across 12 functional workstreams, each with a named corporate owner. The full checklist and schedule go to Montgomery County on contract award.</p>
+    <div class="row r3" style="align-content:center;margin-top:14px;gap:13px;">
+      <div class="ws anim"><div class="hd"><span class="badge">R</span><span class="nm">RVP / Start-Up Lead</span></div><ul><li>Client kickoff &amp; staffing plan</li><li>Org chart exchange</li><li>Reporting &amp; comms protocols</li><li>Contract compliance start-up</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">N</span><span class="nm">Network Dev. &amp; UM</span></div><ul><li>Hospital, specialist, EMS agreements</li><li>Lab, x-ray, biohazard</li><li>Discharge planning &amp; UM setup</li><li>Credentialing for providers</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">M</span><span class="nm">Medical Services</span></div><ul><li>MD / NP credentialing &amp; onboarding</li><li>Chronic care clinic scheduling</li><li>Disease management orientation</li><li>Joint rounds at go-live</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">B</span><span class="nm">Behavioral Health</span></div><ul><li>BH Director appointment &amp; staff hiring</li><li>Psychotropic medication transition</li><li>Community provider coordination</li><li>Intake &amp; reception screening</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">P</span><span class="nm">Pharmacy</span></div><ul><li>Pharmacy sub-contract &amp; licensure</li><li>DEA, POA, formulary &amp; narcotics</li><li>Med carts, PEP &amp; ER kits</li><li>eMAR setup &amp; staff training</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">C</span><span class="nm">Clinical Operations</span></div><ul><li>P&amp;P review &amp; adoption</li><li>Forms, medical records, nursing protocols</li><li>MAC / CQI / IC committee stand-up</li><li>Staffing schedule posted 7+ days pre-start</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">K</span><span class="nm">Credentialing</span></div><ul><li>Onboarding-integrated credentialing</li><li>Provider certifications on file</li><li>MCSO security clearances coordinated</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">T</span><span class="nm">Training &amp; Orientation</span></div><ul><li>NEO sessions &amp; schedule</li><li>EHR end-user training</li><li>HSA / DON / charge nurse onboarding</li><li>Continuing education calendar</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">H</span><span class="nm">Human Resources</span></div><ul><li>Employee roster &amp; retention plan</li><li>Comp &amp; differentials benchmarked</li><li>Worker's comp &amp; benefits</li><li>Communication plan for staff</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">S</span><span class="nm">Supplies &amp; Equipment</span></div><ul><li>Inventory with outgoing vendor</li><li>PAR levels &amp; initial orders</li><li>AED, jump bag, disaster bag</li><li>Reference library &amp; forms</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">I</span><span class="nm">Information Technology</span></div><ul><li>Phone, fax, time clock, EKG lines</li><li>Computer &amp; network install</li><li>Email provisioning &amp; access</li><li>EHR environment ready</li></ul></div>
+      <div class="ws anim"><div class="hd"><span class="badge">L</span><span class="nm">Legal &amp; Finance</span></div><ul><li>State, local &amp; federal filings</li><li>General / professional liability</li><li>Vendor accounts established</li><li>Initial operations audit</li></ul></div>
+    </div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">10</span></div>
+</section>
+
+<!-- 11 TIMELINE -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">Transition plan</div>
+    <h2 class="anim">A Transition Plan Built for Any Timeline</h2>
+    <p class="intro anim">We can execute the required 30-day start-up, and we can extend the same sequence if the County prefers more runway. Click a scenario to see what it looks like.</p>
+    <div class="toggle anim">
+      <button class="on" onclick="setGantt(0,this)">30 Days — Required</button>
+      <button onclick="setGantt(1,this)">60 Days</button>
+      <button onclick="setGantt(2,this)">90 Days</button>
+    </div>
+    <div class="commit anim" style="margin-top:14px;" id="gnote"></div>
+    <div class="gantt anim" style="margin-top:16px;">
+      <div class="grow"><div></div><div class="gcolhdr" id="gcols"></div></div>
+      <div id="grows"></div>
+    </div>
+    <div class="gstats anim">
+      <div class="gs"><div class="n" id="gsdays">30</div><div class="l">Days to go-live</div></div>
+      <div class="gs"><div class="n">12</div><div class="l">Functional workstreams</div></div>
+      <div class="gs"><div class="n">140+</div><div class="l">Transition tasks tracked</div></div>
+      <div class="gs"><div class="n">Day 1</div><div class="l">Continuity commitment</div></div>
+    </div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">11</span></div>
+</section>
+
+<!-- 12 MATRIX -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">Workforce plan</div>
+    <h2 class="anim">Proposed Staffing Plan <span class="thin">· 43.15 FTE · 1,726 hrs/week</span></h2>
+    <table class="anim">
+      <thead><tr><th style="width:27%">Position</th><th class="num">Mon</th><th class="num">Tue</th><th class="num">Wed</th><th class="num">Thu</th><th class="num">Fri</th><th class="num">Sat</th><th class="num">Sun</th><th class="num">TBS</th><th class="num">Hrs/Wk</th><th class="num">FTE</th></tr></thead>
+      <tbody>
+        <tr class="shifthdr"><td colspan="11">Day shift</td></tr>
+        <tr><td class="k">Health Services Administrator — RN</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">40</td><td class="num">1.00</td></tr>
+        <tr><td class="k">Director of Nursing</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">40</td><td class="num">1.00</td></tr>
+        <tr><td class="k">Medical Director</td><td class="num">8</td><td class="num">—</td><td class="num">8</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">16</td><td class="num">0.40</td></tr>
+        <tr><td class="k">ARNP / PA</td><td class="num">12</td><td class="num">8</td><td class="num">12</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">—</td><td class="num">64</td><td class="num">1.60</td></tr>
+        <tr><td class="k">Dentist</td><td class="num">—</td><td class="num">8</td><td class="num">—</td><td class="num">8</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">16</td><td class="num">0.40</td></tr>
+        <tr><td class="k">Dental Assistant</td><td class="num">—</td><td class="num">8</td><td class="num">—</td><td class="num">8</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">16</td><td class="num">0.40</td></tr>
+        <tr><td class="k">Psychiatrist</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">18</td><td class="num">18</td><td class="num">0.45</td></tr>
+        <tr><td class="k">Psychiatric NP / PA</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">40</td><td class="num">1.00</td></tr>
+        <tr><td class="k">Mental Health Director</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">40</td><td class="num">1.00</td></tr>
+        <tr><td class="k">Mental Health Professional</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">10</td><td class="num">10</td><td class="num">—</td><td class="num">60</td><td class="num">1.50</td></tr>
+        <tr><td class="k">Mental Health Professional</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">—</td><td class="num">84</td><td class="num">2.10</td></tr>
+        <tr><td class="k">Discharge Planner</td><td class="num">24</td><td class="num">24</td><td class="num">24</td><td class="num">24</td><td class="num">24</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">120</td><td class="num">3.00</td></tr>
+        <tr><td class="k">Administrative Assistant</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">8</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">40</td><td class="num">1.00</td></tr>
+        <tr><td class="k">Registered Nurse</td><td class="num">20</td><td class="num">20</td><td class="num">20</td><td class="num">20</td><td class="num">20</td><td class="num">12</td><td class="num">12</td><td class="num">—</td><td class="num">124</td><td class="num">3.10</td></tr>
+        <tr><td class="k">Licensed Practical Nurse</td><td class="num">36</td><td class="num">36</td><td class="num">36</td><td class="num">36</td><td class="num">36</td><td class="num">36</td><td class="num">36</td><td class="num">—</td><td class="num">252</td><td class="num">6.30</td></tr>
+        <tr><td class="k">Medical Assistant</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">—</td><td class="num">84</td><td class="num">2.10</td></tr>
+        <tr><td class="k">Registered Nurse — Booking</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">—</td><td class="num">84</td><td class="num">2.10</td></tr>
+        <tr><td class="k">Registered Nurse — Charge / MAT</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">—</td><td class="num">84</td><td class="num">2.10</td></tr>
+        <tr class="tot"><td>Totals — day shift</td><td class="num">188</td><td class="num">192</td><td class="num">204</td><td class="num">192</td><td class="num">200</td><td class="num">114</td><td class="num">114</td><td class="num">18</td><td class="num">1,222</td><td class="num">30.55</td></tr>
+        <tr class="shifthdr"><td colspan="11">Night shift</td></tr>
+        <tr><td class="k">Registered Nurse — Charge</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">—</td><td class="num">84</td><td class="num">2.10</td></tr>
+        <tr><td class="k">Licensed Practical Nurse</td><td class="num">36</td><td class="num">36</td><td class="num">36</td><td class="num">36</td><td class="num">36</td><td class="num">36</td><td class="num">36</td><td class="num">—</td><td class="num">252</td><td class="num">6.30</td></tr>
+        <tr><td class="k">Registered Nurse — Booking</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">—</td><td class="num">84</td><td class="num">2.10</td></tr>
+        <tr><td class="k">Mental Health Professional / Psych RN</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">12</td><td class="num">—</td><td class="num">84</td><td class="num">2.10</td></tr>
+        <tr class="tot"><td>Totals — night shift</td><td class="num">72</td><td class="num">72</td><td class="num">72</td><td class="num">72</td><td class="num">72</td><td class="num">72</td><td class="num">72</td><td class="num">0</td><td class="num">504</td><td class="num">12.60</td></tr>
+        <tr class="tot"><td>Totals — all shifts</td><td class="num">260</td><td class="num">264</td><td class="num">276</td><td class="num">264</td><td class="num">272</td><td class="num">186</td><td class="num">186</td><td class="num">18</td><td class="num">1,726</td><td class="num">43.15</td></tr>
+      </tbody>
+    </table>
+    <div class="chips" style="margin-top:14px;">
+      <span class="chip anim">24/7 licensed nursing</span>
+      <span class="chip anim">3.00 FTE discharge planning</span>
+      <span class="chip anim">Charge RN dedicated to MAT, both shifts</span>
+      <span class="chip ghost anim">Unit-specific addendum agreed before BH beds open</span>
+    </div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">12</span></div>
+</section>
+
+<!-- 13 RECRUIT & RETAIN -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">Workforce plan</div>
+    <h2 class="anim">How We Recruit &amp; Retain</h2>
+    <p class="intro anim">Retention is an ongoing operational discipline — not a one-time event at contract start. We invest in proven programs, market-data discipline, and concierge-level support to make Armor a place where clinicians want to stay.</p>
+    <div class="row" style="align-content:center;">
+      <ul class="bigbul">
+        <li class="anim"><b>Economic Research Institute (ERI)</b> — market-based compensation, benchmarked not guessed; reviewed and adjusted regularly</li>
+        <li class="anim"><b>Fidelity Nurse Loan Payment</b> — recurring student loan repayment program that materially improves nurse retention</li>
+        <li class="anim"><b>White Glove Treatment</b> — concierge onboarding with a dedicated recruiter, expedited credentialing, and a structured 90-day check-in cadence</li>
+        <li class="anim"><b>Tiered Nursing Rates</b> — differentiated pay that rewards experience and certifications, creating a clear path forward without leaving the role</li>
+        <li class="anim"><b>Enhanced Health Solutions</b> — our wholly-owned sister agency, built to eliminate dependency on outside staffing agencies; we staff from within, on our terms, at our rates</li>
+      </ul>
+    </div>
+    <div class="bottomline anim"><b>Bottom line:</b> Montgomery County inherits this retention program from Day 1 — built to keep your clinicians in place.</div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">13</span></div>
+</section>
+
+<!-- 14 FINANCIAL -->
+<section class="slide light">
+  <div class="pad">
+    <div class="eyebrow anim">Financial condition</div>
+    <h2 class="anim">Stable, growing, <span class="thin">and built to stay that way</span></h2>
+    <div class="row" style="align-content:center;">
+      <div style="max-width:1250px;">
+        <div class="anim" style="font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.15;">
+          2025 was the strongest year in Armor's history.<br>
+          <span style="color:var(--red);">2026 is on pace to be better.</span>
+        </div>
+        <div class="chips" style="margin-top:40px;">
+          <span class="chip anim">22 years · one line of business</span>
+          <span class="chip anim">Audited financials available to the County</span>
+          <span class="chip anim">Written notice of any material event</span>
+        </div>
+      </div>
+    </div>
+    <div class="commit anim"><b>Our position:</b> We are happy to take any question on our financial history, in this room, on the record.</div>
+  </div>
+  <div class="redbar">Armor Health<span class="pg">14</span></div>
+</section>
+
+<!-- 17 LIVE DEMO -->
+<section class="slide dark">
+  <div class="glow"></div>
+  <div class="pad">
+    <div class="logo anim"><span class="mark">A</span><span class="wm">Armor <span>Health</span></span></div>
+    <div class="barleft">
+      <div class="kicker anim">Cost management, innovation &amp; reporting</div>
+      <h1 class="anim">Live Demo<br><em>ArmorAI</em> Operating System</h1>
+      <div class="subline anim">A real-time look at the dashboards, risk scoring, utilization tracking, and reporting Montgomery County leadership will have on Day 1.</div>
+      <div class="demo-pills">
+        <span class="anim">Risk-Stratified Care</span>
+        <span class="anim">Cost &amp; Utilization</span>
+        <span class="anim hero">Live KPI Scorecards — every measure in your RFP</span>
+        <span class="anim">County Leadership Views</span>
+      </div>
+    </div>
+  </div>
+  <div class="darkfoot anim"><span>Switching to live environment →</span><span>15</span></div>
+</section>
+
+<!-- 18 CLOSE -->
+<section class="slide dark">
+  <div class="glow"></div>
+  <div class="pad">
+    <div class="logo anim"><span class="mark">A</span><span class="wm">Armor <span>Health</span></span></div>
+    <div class="barleft">
+      <div class="kicker anim">Thank you, Montgomery County</div>
+      <h1 class="anim">Let's raise the<br>standard of care<br>— together.</h1>
+      <div class="subline anim">We welcome your questions, and we look forward to the opportunity to earn Montgomery County's partnership.</div>
+    </div>
+  </div>
+  <div class="darkfoot anim"><span>Armor Health · Miami, Florida</span><span>Raising the standard of care</span></div>
+</section>
+
+</div>
+<script>
+  /* ---------- phase data ---------- */
+  var PHASES = [
+    [ {n:'Phase 1',t:'Mobilize',d:'Days 1 – 7',li:['Executive kickoff with MCSO','Site walkthroughs &amp; inventory','Transition team stood up','Offers to current staff in good standing']},
+      {n:'Phase 2',t:'Build',d:'Days 8 – 18',li:['Credential HSA, DON, Medical Director','Onboard transitioning staff','Stand up pharmacy, lab, radiology','IT infrastructure &amp; EHR training']},
+      {n:'Phase 3',t:'Go-Live',d:'Days 19 – 30',li:['Final dry runs &amp; schedule posted 7 days out','Pharmaceuticals, supplies, equipment in place','Day 1 command center on site','Joint rounds with clinical leadership']},
+      {n:'Phase 4',t:'Stabilize',d:'Post go-live → Day 60',li:['KPI scorecard cadence begins','First operations audit','MAC / CQI / P&amp;T committees seated','Accreditation gap report delivered']} ],
+    [ {n:'Phase 1',t:'Mobilize',d:'Days 1 – 10',li:['Executive kickoff with County leadership','Site walkthroughs &amp; inventory','Transition team stood up','Contract, staffing matrix, reporting reviewed']},
+      {n:'Phase 2',t:'Build',d:'Days 11 – 40',li:['Recruit &amp; credential HSA, MD, DON','Onboard transitioning staff','Stand up vendors (pharmacy, lab, radiology)','IT infrastructure &amp; EHR training']},
+      {n:'Phase 3',t:'Go-Live',d:'Days 41 – 60',li:['Final dry runs &amp; staffing schedule posted','Pharmaceuticals, supplies, equipment in place','Day 1 command center on site','Joint rounds with clinical leadership']},
+      {n:'Phase 4',t:'Stabilize',d:'Post go-live → Day 90',li:['KPI scorecard reporting cadence','First operations audit','MAC / CQI / P&amp;T committees seated','Continuous improvement loop engaged']} ],
+    [ {n:'Phase 1',t:'Mobilize',d:'Days 1 – 20',li:['Executive kickoff and joint planning','Full site assessment &amp; chart baseline','Transition team stood up','Accreditation status reviewed in depth']},
+      {n:'Phase 2',t:'Build',d:'Days 21 – 55',li:['Recruit &amp; credential full leadership team','Onboard transitioning staff','Vendors and off-site network contracted','EHR build, conversion &amp; training']},
+      {n:'Phase 3',t:'Go-Live',d:'Days 56 – 90',li:['Extended dry runs and shadow shifts','Supplies and equipment fully staged','Day 1 command center on site','Joint rounds with clinical leadership']},
+      {n:'Phase 4',t:'Stabilize',d:'Post go-live → Day 120',li:['KPI scorecard cadence with County','First operations audit','Committees seated and meeting','Mock survey scheduled']} ]
+  ];
+  function renderPhases(){
+    PHASES.forEach(function(set,i){
+      document.getElementById('ph'+i).innerHTML = set.map(function(p){
+        return '<div class="ph"><div class="n">'+p.n+'</div><div class="t">'+p.t+'</div><div class="d">'+p.d+'</div><ul>'+
+          p.li.map(function(l){return '<li>'+l+'</li>';}).join('')+'</ul></div>';
+      }).join('');
+    });
+  }
+  function setPhase(n,btn){
+    [0,1,2].forEach(function(i){ document.getElementById('ph'+i).classList.toggle('on', i===n); });
+    btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');
+  }
+
+  /* ---------- gantt data ---------- */
+  var GANTT = [
+    { days:'30', cols:['Wk 1','Wk 2','Wk 3','Wk 4'],
+      note:'<b>30-day required:</b> The RFP requires full implementation within 30 days of contract execution. This is the plan we have priced and staffed.',
+      rows:[['Executive kickoff',0,22],['Staffing &amp; recruitment',0,80],['Credentialing',5,70],['Vendors (pharmacy, lab)',5,55],['Policies &amp; procedures',0,50],['IT / EHR setup',10,60],['Training &amp; NEO',45,45],['Supplies &amp; equipment',30,55],['Final dry runs',75,20],['Day 1 go-live',95,5,'golive']] },
+    { days:'60', cols:['Wk 1-2','Wk 3-4','Wk 5-6','Wk 7-8'],
+      note:'<b>60-day option:</b> More runway for credentialing and joint planning with County leadership before go-live.',
+      rows:[['Executive kickoff',0,20],['Staffing &amp; recruitment',0,85],['Credentialing',10,70],['Vendors (pharmacy, lab)',10,55],['Policies &amp; procedures',0,45],['IT / EHR setup',10,60],['Training &amp; NEO',52,38],['Supplies &amp; equipment',35,50],['Final dry runs',80,15],['Day 1 go-live',95,5,'golive']] },
+    { days:'90', cols:['Wk 1-3','Wk 4-6','Wk 7-9','Wk 10-12'],
+      note:'<b>90-day option:</b> Deepest preparation — extended shadow shifts, full record conversion, and a mock survey before go-live.',
+      rows:[['Executive kickoff',0,18],['Staffing &amp; recruitment',0,88],['Credentialing',8,72],['Vendors (pharmacy, lab)',12,58],['Policies &amp; procedures',0,52],['IT / EHR setup',8,68],['Training &amp; NEO',55,35],['Supplies &amp; equipment',40,48],['Final dry runs',82,13],['Day 1 go-live',95,5,'golive']] }
+  ];
+  function renderGantt(n){
+    var g = GANTT[n];
+    document.getElementById('gcols').innerHTML = g.cols.map(function(c){return '<div>'+c+'</div>';}).join('');
+    document.getElementById('gnote').innerHTML = g.note;
+    document.getElementById('gsdays').textContent = g.days;
+    document.getElementById('grows').innerHTML = g.rows.map(function(r){
+      var cls = r[3] ? 'bar '+r[3] : 'bar';
+      return '<div class="grow"><div class="lb">'+r[0]+'</div><div class="track">'+
+        '<div class="'+cls+'" style="left:'+r[1]+'%;width:'+r[2]+'%"></div></div></div>';
+    }).join('');
+  }
+  function setGantt(n,btn){
+    renderGantt(n);
+    btn.parentNode.querySelectorAll('button').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');
+  }
+
+  /* ---------- deck nav ---------- */
+  var slides = document.querySelectorAll('.slide');
+  var cur = 0;
+  function animate(sl){
+    var els = sl.querySelectorAll('.anim');
+    els.forEach(function(el){ el.classList.remove('anim-in'); });
+    els.forEach(function(el,i){ setTimeout(function(){ el.classList.add('anim-in'); }, 90 + i*80); });
+  }
+  function show(i){
+    if(i<0 || i>=slides.length) return;
+    slides[cur].classList.remove('active');
+    cur = i; slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = (cur+1)+' / '+slides.length;
+    animate(slides[cur]); window.scrollTo(0,0);
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight' || e.key===' ') show(cur+1);
+    if(e.key==='ArrowLeft') show(cur-1);
+  });
+  renderPhases(); renderGantt(0);
+  document.getElementById('counter').textContent = '1 / '+slides.length;
+  animate(slides[0]);
+  window.show = show; window.setPhase = setPhase; window.setGantt = setGantt;
+</script>
+</body>
+</html>
